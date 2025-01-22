@@ -16,7 +16,6 @@ func main() {
 			NewHTTPServer,
 
 			shortreq.NewIncomingRequestProcessor,
-			shortreq.NewOutgoingRequestResolver,
 			shortreq.NewResponseShorteningService,
 			shortreq.NewLoopLimiter,
 			shortreq.NewLoopLimiterSettings,

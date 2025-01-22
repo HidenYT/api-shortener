@@ -22,35 +22,28 @@ type IIncomingRequestProcessor interface {
 	CreateOutgoingRequest(api *ShortenedAPI) (*http.Request, error)
 }
 
-type IncomingRequestProcessor struct {
-	outgoingRequestConfigResolver IOutgoingRequestConfigResolver
-}
+type IncomingRequestProcessor struct{}
 
 func (processor *IncomingRequestProcessor) CreateOutgoingRequest(api *ShortenedAPI) (*http.Request, error) {
-	requestConfig := processor.outgoingRequestConfigResolver.GetRequestConfigModel(api)
-
+	requestConfig := api.Config
 	request, err := http.NewRequest(requestConfig.Method, requestConfig.Url, strings.NewReader(requestConfig.Body))
 	if err != nil {
 		return nil, &RequestCreationError{err: err}
 	}
 
-	for k, v := range requestConfig.Headers {
-		for _, val := range v {
-			request.Header.Add(k, val)
-		}
+	for _, header := range requestConfig.Headers {
+		request.Header.Add(header.Name, header.Value)
 	}
 	q := request.URL.Query()
-	for k, v := range requestConfig.Params {
-		q.Add(k, v)
+	for _, param := range requestConfig.Params {
+		q.Add(param.Name, param.Value)
 	}
 	request.URL.RawQuery = q.Encode()
 	return request, err
 }
 
-func NewIncomingRequestProcessor(outgoingRequestResolver IOutgoingRequestConfigResolver) IIncomingRequestProcessor {
-	return &IncomingRequestProcessor{
-		outgoingRequestConfigResolver: outgoingRequestResolver,
-	}
+func NewIncomingRequestProcessor() IIncomingRequestProcessor {
+	return &IncomingRequestProcessor{}
 }
 
 type IOutgoingRequestProcessor interface {
