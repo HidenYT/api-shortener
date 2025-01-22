@@ -1,7 +1,6 @@
 package shortreq
 
 import (
-	"io"
 	"net/http"
 	"time"
 
@@ -11,7 +10,7 @@ import (
 )
 
 type IOutgoingRequestClient interface {
-	MakeRequest(request *http.Request) ([]byte, int, error)
+	MakeRequest(request *http.Request) (*http.Response, error)
 }
 
 type OutgoingRequestClientSettings struct {
@@ -24,23 +23,21 @@ type OutgoingRequestClient struct {
 	settings *OutgoingRequestClientSettings
 }
 
-func (c *OutgoingRequestClient) MakeRequest(request *http.Request) ([]byte, int, error) {
+func (c *OutgoingRequestClient) MakeRequest(request *http.Request) (*http.Response, error) {
 	c.client.Timeout = c.settings.Timeout
-	var body []byte
+	var response *http.Response
 	attemptsCount := 0
-	statusCode := 0
 	err := retry.Do(func() error {
 		attemptsCount++
-		response, err := c.client.Do(request)
+		var err error
+		response, err = c.client.Do(request)
 		if err != nil {
 			return err
 		}
-		body, err = io.ReadAll(response.Body)
-		statusCode = response.StatusCode
 		return err
 	}, retry.Attempts(uint(c.settings.Retries)))
 	logrus.Infof("Finished request to %s%s in %d attempts", request.URL.Host, request.URL.RequestURI(), attemptsCount)
-	return body, statusCode, err
+	return response, err
 }
 
 func NewOutgoingRequestClientSettings() *OutgoingRequestClientSettings {

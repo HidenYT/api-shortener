@@ -2,6 +2,7 @@ package shortreq
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
@@ -63,11 +64,22 @@ type OutgoingRequestProcessor struct {
 }
 
 func (processor *OutgoingRequestProcessor) Process(request *http.Request, c *gin.Context, api *ShortenedAPI) {
-	response, statusCode, err := processor.client.MakeRequest(request)
+	response, err := processor.client.MakeRequest(request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		logrus.Errorf("Error while making request with API %d: %s", api.ID, err.Error())
 		return
+	}
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		logrus.Errorf("Error decoding response body for API %d: %s", api.ID, err.Error())
+		return
+	}
+
+	for headerName := range response.Header {
+		c.Writer.Header().Add(headerName, response.Header.Get(headerName))
 	}
 
 	rules, err := processor.rulesResolver.GetRules(api)
@@ -77,14 +89,14 @@ func (processor *OutgoingRequestProcessor) Process(request *http.Request, c *gin
 		return
 	}
 
-	result, err := processor.jsonResponseShortener.Shorten(response, rules)
+	result, err := processor.jsonResponseShortener.Shorten(body, rules)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		logrus.Errorf("Getting shortening response for API %d: %s", api.ID, err.Error())
 		return
 	}
 
-	c.JSON(statusCode, result)
+	c.JSON(response.StatusCode, result)
 }
 
 func NewOutgoingRequestProcessor(
