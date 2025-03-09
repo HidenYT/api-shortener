@@ -24,7 +24,11 @@ func main() {
 			db.NewDB,
 			db.NewMigrator,
 
-			shortreq.NewShortenedAPIDAO,
+			restapi.NewShortenedAPIDAO,
+			restapi.NewOutgoingRequestConfigDAO,
+			restapi.NewOutgoingRequestHeaderDAO,
+			restapi.NewOutgoingRequestParamDAO,
+			restapi.NewShorteningRuleDAO,
 
 			shortreq.NewOutgoingRequestProcessor,
 			shortreq.NewJsonResponseShortener,

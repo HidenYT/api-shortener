@@ -1,6 +1,7 @@
 package shortreq
 
 import (
+	"api-shortener/restapi"
 	"fmt"
 	"io"
 	"net/http"
@@ -19,13 +20,16 @@ func (e *RequestCreationError) Error() string {
 }
 
 type IIncomingRequestProcessor interface {
-	CreateOutgoingRequest(api *ShortenedAPI) (*http.Request, error)
+	CreateOutgoingRequest(api *restapi.ShortenedAPI) (*http.Request, error)
 }
 
-type IncomingRequestProcessor struct{}
+type IncomingRequestProcessor struct {
+	configDAO restapi.IOutgoingRequestConfigDAO
+}
 
-func (processor *IncomingRequestProcessor) CreateOutgoingRequest(api *ShortenedAPI) (*http.Request, error) {
-	requestConfig := api.Config
+func (processor *IncomingRequestProcessor) CreateOutgoingRequest(api *restapi.ShortenedAPI) (*http.Request, error) {
+	requestConfigs, _ := processor.configDAO.GetAllByAPIID(api.ID)
+	requestConfig := requestConfigs[0]
 	request, err := http.NewRequest(requestConfig.Method, requestConfig.Url, strings.NewReader(requestConfig.Body))
 	if err != nil {
 		return nil, &RequestCreationError{err: err}
@@ -42,12 +46,12 @@ func (processor *IncomingRequestProcessor) CreateOutgoingRequest(api *ShortenedA
 	return request, err
 }
 
-func NewIncomingRequestProcessor() IIncomingRequestProcessor {
-	return &IncomingRequestProcessor{}
+func NewIncomingRequestProcessor(configDAO restapi.IOutgoingRequestConfigDAO) IIncomingRequestProcessor {
+	return &IncomingRequestProcessor{configDAO: configDAO}
 }
 
 type IOutgoingRequestProcessor interface {
-	Process(request *http.Request, c *gin.Context, api *ShortenedAPI)
+	Process(request *http.Request, c *gin.Context, api *restapi.ShortenedAPI)
 }
 
 type OutgoingRequestProcessor struct {
@@ -56,7 +60,7 @@ type OutgoingRequestProcessor struct {
 	client                IOutgoingRequestClient
 }
 
-func (processor *OutgoingRequestProcessor) Process(request *http.Request, c *gin.Context, api *ShortenedAPI) {
+func (processor *OutgoingRequestProcessor) Process(request *http.Request, c *gin.Context, api *restapi.ShortenedAPI) {
 	response, err := processor.client.MakeRequest(request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -65,6 +69,7 @@ func (processor *OutgoingRequestProcessor) Process(request *http.Request, c *gin
 	}
 
 	body, err := io.ReadAll(response.Body)
+	response.Body.Close()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		logrus.Errorf("Error decoding response body for API %d: %s", api.ID, err.Error())

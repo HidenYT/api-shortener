@@ -1,4 +1,4 @@
-package shortreq
+package restapi
 
 import (
 	"github.com/go-playground/validator/v10"
@@ -27,13 +27,7 @@ func (dao *ShortenedAPIDAO) Create(api *ShortenedAPI) error {
 
 func (dao *ShortenedAPIDAO) Get(id uint) (*ShortenedAPI, error) {
 	result := &ShortenedAPI{}
-	takeResult := dao.db.
-		Preload("Config").
-		Preload("Config.Headers").
-		Preload("Config.Params").
-		Preload("ShorteningRules").
-		Where("ID = ?", id).
-		Take(result)
+	takeResult := dao.db.Where("ID = ?", id).Preload("ShorteningRules").Find(result)
 	return result, takeResult.Error
 }
 
@@ -42,21 +36,7 @@ func (dao *ShortenedAPIDAO) Update(api *ShortenedAPI) error {
 	if err != nil {
 		return err
 	}
-	return dao.db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Model(api.Config).Association("Headers").Replace(api.Config.Headers)
-		if err != nil {
-			return err
-		}
-		err = tx.Model(api.Config).Association("Params").Replace(api.Config.Params)
-		if err != nil {
-			return err
-		}
-		err = tx.Model(api).Association("ShorteningRules").Replace(api.ShorteningRules)
-		if err != nil {
-			return err
-		}
-		return tx.Session(&gorm.Session{FullSaveAssociations: true}).Updates(api).Error
-	})
+	return dao.db.Updates(api).Error
 }
 
 func (dao *ShortenedAPIDAO) Delete(id uint) error {

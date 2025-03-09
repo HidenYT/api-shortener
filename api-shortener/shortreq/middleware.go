@@ -1,6 +1,7 @@
 package shortreq
 
 import (
+	"api-shortener/restapi"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -21,7 +22,7 @@ func (e *APINotFoundError) Error() string {
 	return fmt.Sprintf("API with id %d not found", e.apiID)
 }
 
-func APIAuthChecker(apiRepo IShortenedAPIDAO) gin.HandlerFunc {
+func APIAuthChecker(apiDAO restapi.IShortenedAPIDAO) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		apiID, err := strconv.ParseUint(c.Param("apiID"), 10, 32)
 		if err != nil {
@@ -29,7 +30,7 @@ func APIAuthChecker(apiRepo IShortenedAPIDAO) gin.HandlerFunc {
 			return
 		}
 
-		api, err := apiRepo.Get(uint(apiID))
+		api, err := apiDAO.Get(uint(apiID))
 		if err != nil {
 			err = &APINotFoundError{apiID: uint(apiID)}
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -19,12 +19,12 @@ const ENV_FILE_NAME = ".env"
 func NewHTTPServer(
 	lc fx.Lifecycle,
 	shorteningService shortreq.IResponseShorteningService,
-	apiRepo shortreq.IShortenedAPIDAO,
+	apiDAO restapi.IShortenedAPIDAO,
 	restService restapi.IRESTService,
 ) *http.Server {
 	ginServer := gin.Default()
 	ginServer.Use(security.APITokenChecker())
-	shortreq.AttachAPIShorteningGroup(ginServer, shorteningService, apiRepo)
+	shortreq.AttachAPIShorteningGroup(ginServer, shorteningService, apiDAO)
 	restapi.AttachRESTAPIGroup(ginServer, restService)
 	return appendGinToLifecycle(lc, ginServer)
 }

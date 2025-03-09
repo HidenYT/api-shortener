@@ -1,6 +1,7 @@
 package shortreq
 
 import (
+	"api-shortener/restapi"
 	"fmt"
 	"net/http"
 
@@ -9,7 +10,7 @@ import (
 )
 
 type IResponseShorteningService interface {
-	ProcessRequest(api *ShortenedAPI, c *gin.Context)
+	ProcessRequest(api *restapi.ShortenedAPI, c *gin.Context)
 }
 
 type ResponseShorteningService struct {
@@ -26,7 +27,7 @@ func (e *RequestAlreadySentError) Error() string {
 	return fmt.Sprintf("Request is already sent to the API %d", e.apiId)
 }
 
-func (s *ResponseShorteningService) ProcessRequest(api *ShortenedAPI, c *gin.Context) {
+func (s *ResponseShorteningService) ProcessRequest(api *restapi.ShortenedAPI, c *gin.Context) {
 	if !s.limiter.AddNewRequest(api.ID) {
 		err := &RequestAlreadySentError{apiId: api.ID}
 		c.JSON(http.StatusTooManyRequests, gin.H{"error": err.Error()})

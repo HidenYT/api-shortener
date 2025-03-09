@@ -38,192 +38,45 @@ parameter `token` with the token from `API_KEY` in the `.env` file:
 curl http://localhost:8080/api/63?token=MY_TOKEN_FROM_API_KEY
 ```
 ### Description
+#### ShortenedAPI
 |Path|Method|Description|
 |----|------|-----------|
-|`/rest/:id`|GET|Get ShortenedAPI by ID|
-|`/rest`|POST|Create ShortenedAPI from JSON|
-|`/rest`|PUT|Update ShortenedAPI from JSON|
-|`/rest/:id`|DELETE|Delete ShortenedAPI by ID|
+|`/rest/api`|POST|Create ShortenedAPI from JSON|
+|`/rest/api/:id`|DELETE|Delete ShortenedAPI by ID|
 |`/api/:id`|any|Send request to the ShortenedAPI with the ID|
 
-### Examples
-#### Create ShortenedAPI 
-<details>
-    <summary>Request</summary>
+#### OutgoingRequestConfig
+|Path|Method|Description|
+|----|------|-----------|
+|`/rest/configs`|POST|Create OutgoingRequestConfig from JSON|
+|`/rest/configs/:id`|GET|Get OutgoingRequestConfig by ID|
+|`/rest/configs/?apiID=API_ID`|GET|Get all OutgoingRequestConfigs by ShortenedAPI ID|
+|`/rest/configs`|PUT|Update OutgoingRequestConfig from JSON|
+|`/rest/configs/:id`|DELETE|Delete OutgoingRequestConfig by ID|
 
-```
-curl --location 'http://localhost:8080/rest?token=MY_TOKEN_FROM_API_KEY' \
---request POST \
---header 'Content-Type: application/json' \
---data '{
-    "config": {
-        "url": "https://timeapi.io/api/time/current/zone",
-        "method": "GET",
-        "params": [
-            {
-                "name": "timeZone",
-                "value": "Europe/Amsterdam"
-            }
-        ],
-        "headers": [
-            {
-                "name": "Accept",
-                "value": "application/json"
-            }
-        ]
-    },
-    "rules": [
-        {
-            "field_name": "datetime",
-            "field_value_query": "$.dateTime"
-        }
-    ]
-}'
-```
-</details>
+#### ShorteningRule
+|Path|Method|Description|
+|----|------|-----------|
+|`/rest/rules`|POST|Create ShorteningRule from JSON|
+|`/rest/rules/:id`|GET|Get ShorteningRule by ID|
+|`/rest/rules/?apiID=API_ID`|GET|Get all ShorteningRules by ShortenedAPI ID|
+|`/rest/rules`|PUT|Update ShorteningRule from JSON|
+|`/rest/rules/:id`|DELETE|Delete ShorteningRule by ID|
 
-<details>
-    <summary>Response body</summary>
-    
-```
-{
-    "id": 1,
-    "config": {
-        "id": 2,
-        "url": "https://timeapi.io/api/time/current/zone",
-        "method": "GET",
-        "headers": [
-            {
-                "id": 3,
-                "name": "Accept",
-                "value": "application/json"
-            }
-        ],
-        "params": [
-            {
-                "id": 4,
-                "name": "timeZone",
-                "value": "Europe/Amsterdam"
-            }
-        ],
-        "body": ""
-    },
-    "rules": [
-        {
-            "id": 5,
-            "field_name": "datetime",
-            "field_value_query": "$.dateTime"
-        }
-    ]
-}
-```
-</details>
+#### OutgoingRequestHeader
+|Path|Method|Description|
+|----|------|-----------|
+|`/rest/headers`|POST|Create OutgoingRequestHeader from JSON|
+|`/rest/headers/:id`|GET|Get OutgoingRequestHeader by ID|
+|`/rest/headers/?configID=CONFIG_ID`|GET|Get all OutgoingRequestHeaders by OutgoingRequestConfig ID|
+|`/rest/headers`|PUT|Update OutgoingRequestHeader from JSON|
+|`/rest/headers/:id`|DELETE|Delete OutgoingRequestHeader by ID|
 
-#### Get ShortenedAPI
-<details>
-    <summary>Request</summary>
-
-```
-curl --location 'http://localhost:8080/rest/66?token=MY_TOKEN_FROM_API_KEY' --request GET
-```
-</details>
-<details>
-    <summary>Response body</summary>
-    
-```
-{
-    "id": 66,
-    "config": {
-        "id": 2,
-        "url": "https://timeapi.io/api/time/current/zone",
-        "method": "GET",
-        "headers": [],
-        "params": [
-            {
-                "id": 4,
-                "name": "timeZone",
-                "value": "Europe/Amsterdam"
-            }
-        ],
-        "body": ""
-    },
-    "rules": [
-        {
-            "id": 5,
-            "field_name": "datetime",
-            "field_value_query": "$.dateTime"
-        }
-    ]
-}
-```
-</details>
-
-#### Update ShortenedAPI 
-<details>
-    <summary>Request</summary>
-
-```
-curl --location --request PUT 'http://localhost:8080/rest?token=MY_TOKEN_FROM_API_KEY' \
---request PUT \
---header 'Content-Type: application/json' \
---data '{
-    "id": 69,
-    "config": {
-        "id": 72,
-        "url": "https://timeapi.io/api/time/current/zone",
-        "method": "GET",
-        "headers": [],
-        "params": [],
-        "body": ""
-    },
-    "rules": [
-        {
-            "id": 66,
-            "field_name": "datetime",
-            "field_value_query": "$.dateTime"
-        }
-    ]
-}'
-```
-</details>
-
-<details>
-    <summary>Response body</summary>
-
-```
-{
-    "id": 69,
-    "config": {
-        "id": 72,
-        "url": "https://timeapi.io/api/time/current/zone",
-        "method": "GET",
-        "headers": [],
-        "params": [],
-        "body": ""
-    },
-    "rules": [
-        {
-            "id": 66,
-            "field_name": "datetime",
-            "field_value_query": "$.dateTime"
-        }
-    ]
-}
-```
-</details>
-
-#### Delete ShortenedAPI
-<details>
-    <summary>Request</summary>
-
-```
-curl --location 'http://localhost:8080/rest/66?token=MY_TOKEN_FROM_API_KEY' --request DELETE
-```
-</details>
-<details>
-    <summary>Response body</summary>
-    
-```
-{}
-```
-</details>
+#### OutgoingRequestParam
+|Path|Method|Description|
+|----|------|-----------|
+|`/rest/params`|POST|Create OutgoingRequestParam from JSON|
+|`/rest/params/:id`|GET|Get OutgoingRequestParam by ID|
+|`/rest/params/?configID=CONFIG_ID`|GET|Get all OutgoingRequestParams by OutgoingRequestConfig ID|
+|`/rest/params`|PUT|Update OutgoingRequestParam from JSON|
+|`/rest/params/:id`|DELETE|Delete OutgoingRequestParam by ID|
