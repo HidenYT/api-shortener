@@ -8,7 +8,7 @@ import (
 type IOutgoingRequestConfigDAO interface {
 	Create(api *OutgoingRequestConfig) error
 	Get(id uint) (*OutgoingRequestConfig, error)
-	GetAllByAPIID(apiID uint) ([]*OutgoingRequestConfig, error)
+	GetByAPIID(apiID uint) (*OutgoingRequestConfig, error)
 	Update(api *OutgoingRequestConfig) error
 	Delete(id uint) error
 }
@@ -32,9 +32,9 @@ func (dao *OutgoingRequestConfigDAO) Get(id uint) (*OutgoingRequestConfig, error
 	return result, takeResult.Error
 }
 
-func (dao *OutgoingRequestConfigDAO) GetAllByAPIID(apiID uint) ([]*OutgoingRequestConfig, error) {
-	var result []*OutgoingRequestConfig
-	takeResult := dao.db.Where("Shortened_API_ID = ?", apiID).Find(&result)
+func (dao *OutgoingRequestConfigDAO) GetByAPIID(apiID uint) (*OutgoingRequestConfig, error) {
+	result := &OutgoingRequestConfig{}
+	takeResult := dao.db.Where("Shortened_API_ID = ?", apiID).Take(&result)
 	return result, takeResult.Error
 }
 
@@ -47,7 +47,11 @@ func (dao *OutgoingRequestConfigDAO) Update(api *OutgoingRequestConfig) error {
 }
 
 func (dao *OutgoingRequestConfigDAO) Delete(id uint) error {
-	return dao.db.Delete(&OutgoingRequestConfig{}, id).Error
+	config, err := dao.Get(id)
+	if err != nil {
+		return err
+	}
+	return dao.db.Unscoped().Delete(config).Error
 }
 
 func NewOutgoingRequestConfigDAO(conn *gorm.DB, validate *validator.Validate) IOutgoingRequestConfigDAO {

@@ -32,7 +32,6 @@ func main() {
 
 			shortreq.NewOutgoingRequestProcessor,
 			shortreq.NewJsonResponseShortener,
-			shortreq.NewShorteningRulesResolver,
 
 			shortreq.NewOutgoingRequestClientSettings,
 			shortreq.NewOutgoingRequestClient,

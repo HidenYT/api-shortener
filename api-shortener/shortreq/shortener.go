@@ -8,7 +8,7 @@ import (
 )
 
 type IResponseShortener interface {
-	Shorten(responseBody []byte, rules ShorteningRules) (map[string]any, error)
+	Shorten(responseBody []byte, rules map[string]string) (map[string]any, error)
 }
 
 type JSONResponseShortener struct{}
@@ -21,7 +21,7 @@ func (e *ShorteningError) Error() string {
 	return fmt.Sprintf("Error while shortening response: %s", e.err.Error())
 }
 
-func (shortener *JSONResponseShortener) Shorten(body []byte, rules ShorteningRules) (map[string]any, error) {
+func (shortener *JSONResponseShortener) Shorten(body []byte, rules map[string]string) (map[string]any, error) {
 	parsedJson, err := oj.Parse(body)
 	if err != nil {
 		return map[string]any{}, &ShorteningError{err: err}
@@ -35,7 +35,7 @@ func (shortener *JSONResponseShortener) Shorten(body []byte, rules ShorteningRul
 	return result, nil
 }
 
-func (shortener *JSONResponseShortener) shortenWithRules(json any, rules ShorteningRules) (map[string]any, error) {
+func (shortener *JSONResponseShortener) shortenWithRules(json any, rules map[string]string) (map[string]any, error) {
 	result := make(map[string]any)
 	for rule_k, rule_v := range rules {
 		expr, err := jp.ParseString(rule_v)

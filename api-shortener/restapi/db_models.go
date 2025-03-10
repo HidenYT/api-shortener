@@ -12,7 +12,7 @@ type ShortenedAPI struct {
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 
-	ShorteningRules []ShorteningRule `json:"-"`
+	ShorteningRules []ShorteningRule `json:"-" gorm:"constraint:OnDelete:CASCADE;"`
 }
 
 type OutgoingRequestConfig struct {
@@ -29,7 +29,7 @@ type OutgoingRequestConfig struct {
 	Body    string                   `json:"body"`
 
 	ShortenedAPIID uint          `json:"shortened_api_id" validate:"required"`
-	ShortenedAPI   *ShortenedAPI `json:"-" gorm:"constraint:OnDelete:CASCADE"`
+	ShortenedAPI   *ShortenedAPI `json:"-" gorm:"constraint:OnDelete:CASCADE;"`
 }
 
 type OutgoingRequestHeader struct {
@@ -42,7 +42,7 @@ type OutgoingRequestHeader struct {
 	Value string `json:"value" validate:"required"`
 
 	OutgoingRequestConfigID uint                   `json:"outgoing_request_config_id" validate:"required"`
-	OutgoingRequestConfig   *OutgoingRequestConfig `json:"-" gorm:"constraint:OnDelete:CASCADE"`
+	OutgoingRequestConfig   *OutgoingRequestConfig `json:"-" gorm:"constraint:OnDelete:CASCADE;"`
 }
 
 type OutgoingRequestParam struct {
@@ -55,7 +55,7 @@ type OutgoingRequestParam struct {
 	Value string `json:"value" validate:"required"`
 
 	OutgoingRequestConfigID uint                   `json:"outgoing_request_config_id" validate:"required"`
-	OutgoingRequestConfig   *OutgoingRequestConfig `json:"-" gorm:"constraint:OnDelete:CASCADE"`
+	OutgoingRequestConfig   *OutgoingRequestConfig `json:"-" gorm:"constraint:OnDelete:CASCADE;"`
 }
 
 type ShorteningRule struct {
@@ -68,5 +68,5 @@ type ShorteningRule struct {
 	FieldValueQuery string `json:"field_value_query" validate:"required,jsonpath-query"`
 
 	ShortenedAPIID uint          `json:"shortened_api_id" validate:"required"`
-	ShortenedAPI   *ShortenedAPI `json:"-" gorm:"constraint:OnDelete:CASCADE"`
+	ShortenedAPI   *ShortenedAPI `json:"-" gorm:"constraint:OnDelete:CASCADE;"`
 }

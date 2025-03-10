@@ -8,7 +8,7 @@ import (
 type IOutgoingRequestParamDAO interface {
 	Create(api *OutgoingRequestParam) error
 	Get(id uint) (*OutgoingRequestParam, error)
-	GetAllByConfigID(apiID uint) ([]*OutgoingRequestParam, error)
+	GetAllByConfigID(configID uint) ([]*OutgoingRequestParam, error)
 	Update(api *OutgoingRequestParam) error
 	Delete(id uint) error
 }
@@ -18,12 +18,12 @@ type OutgoingRequestParamDAO struct {
 	validate *validator.Validate
 }
 
-func (dao *OutgoingRequestParamDAO) Create(api *OutgoingRequestParam) error {
-	err := dao.validate.Struct(api)
+func (dao *OutgoingRequestParamDAO) Create(param *OutgoingRequestParam) error {
+	err := dao.validate.Struct(param)
 	if err != nil {
 		return err
 	}
-	return dao.db.Create(api).Error
+	return dao.db.Create(param).Error
 }
 
 func (dao *OutgoingRequestParamDAO) Get(id uint) (*OutgoingRequestParam, error) {
@@ -32,22 +32,26 @@ func (dao *OutgoingRequestParamDAO) Get(id uint) (*OutgoingRequestParam, error) 
 	return result, takeResult.Error
 }
 
-func (dao *OutgoingRequestParamDAO) GetAllByConfigID(apiID uint) ([]*OutgoingRequestParam, error) {
+func (dao *OutgoingRequestParamDAO) GetAllByConfigID(configID uint) ([]*OutgoingRequestParam, error) {
 	var result []*OutgoingRequestParam
-	takeResult := dao.db.Where("OutgoingRequestConfigID = ?", apiID).Find(&result)
+	takeResult := dao.db.Where("Outgoing_Request_Config_ID = ?", configID).Find(&result)
 	return result, takeResult.Error
 }
 
-func (dao *OutgoingRequestParamDAO) Update(api *OutgoingRequestParam) error {
-	err := dao.validate.Struct(api)
+func (dao *OutgoingRequestParamDAO) Update(param *OutgoingRequestParam) error {
+	err := dao.validate.Struct(param)
 	if err != nil {
 		return err
 	}
-	return dao.db.Updates(api).Error
+	return dao.db.Updates(param).Error
 }
 
 func (dao *OutgoingRequestParamDAO) Delete(id uint) error {
-	return dao.db.Delete(&OutgoingRequestParam{}, id).Error
+	param, err := dao.Get(id)
+	if err != nil {
+		return err
+	}
+	return dao.db.Unscoped().Delete(param).Error
 }
 
 func NewOutgoingRequestParamDAO(conn *gorm.DB, validate *validator.Validate) IOutgoingRequestParamDAO {

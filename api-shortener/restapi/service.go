@@ -5,31 +5,31 @@ import (
 )
 
 type IRESTService interface {
-	CreateAPI(api *ShortenedAPI) (*ShortenedAPI, error)
+	CreateAPI() (*ShortenedAPI, error)
 	DeleteAPI(id uint) error
 
-	CreateConfig(api *OutgoingRequestConfig) (*OutgoingRequestConfig, error)
+	CreateConfig(api *OutgoingRequestConfigRequest) (*OutgoingRequestConfig, error)
 	GetConfig(id uint) (*OutgoingRequestConfig, error)
-	GetAllConfigsByAPIID(apiID uint) ([]*OutgoingRequestConfig, error)
-	UpdateConfig(api *OutgoingRequestConfig) (*OutgoingRequestConfig, error)
+	GetConfigByAPIID(apiID uint) (*OutgoingRequestConfig, error)
+	UpdateConfig(id uint, api *OutgoingRequestConfigRequest) (*OutgoingRequestConfig, error)
 	DeleteConfig(id uint) error
 
-	CreateRule(api *ShorteningRule) (*ShorteningRule, error)
+	CreateRule(api *ShorteningRuleRequest) (*ShorteningRule, error)
 	GetRule(id uint) (*ShorteningRule, error)
 	GetAllRulesByAPIID(apiID uint) ([]*ShorteningRule, error)
-	UpdateRule(api *ShorteningRule) (*ShorteningRule, error)
+	UpdateRule(id uint, api *ShorteningRuleRequest) (*ShorteningRule, error)
 	DeleteRule(id uint) error
 
-	CreateRequestHeader(api *OutgoingRequestHeader) (*OutgoingRequestHeader, error)
+	CreateRequestHeader(api *OutgoingRequestHeaderRequest) (*OutgoingRequestHeader, error)
 	GetRequestHeader(id uint) (*OutgoingRequestHeader, error)
 	GetAllRequestHeadersByConfigID(apiID uint) ([]*OutgoingRequestHeader, error)
-	UpdateRequestHeader(api *OutgoingRequestHeader) (*OutgoingRequestHeader, error)
+	UpdateRequestHeader(id uint, api *OutgoingRequestHeaderRequest) (*OutgoingRequestHeader, error)
 	DeleteRequestHeader(id uint) error
 
-	CreateRequestParam(api *OutgoingRequestParam) (*OutgoingRequestParam, error)
+	CreateRequestParam(api *OutgoingRequestParamRequest) (*OutgoingRequestParam, error)
 	GetRequestParam(id uint) (*OutgoingRequestParam, error)
 	GetAllRequestParamsByConfigID(apiID uint) ([]*OutgoingRequestParam, error)
-	UpdateRequestParam(api *OutgoingRequestParam) (*OutgoingRequestParam, error)
+	UpdateRequestParam(id uint, api *OutgoingRequestParamRequest) (*OutgoingRequestParam, error)
 	DeleteRequestParam(id uint) error
 }
 
@@ -62,10 +62,8 @@ func NewRESTService(
 
 // API
 
-func (s *RESTService) CreateAPI(api *ShortenedAPI) (*ShortenedAPI, error) {
-	api.ID = 0
-	err := s.apiDAO.Create(api)
-	return api, err
+func (s *RESTService) CreateAPI() (*ShortenedAPI, error) {
+	return s.apiDAO.Create()
 }
 
 func (s *RESTService) DeleteAPI(id uint) error {
@@ -74,8 +72,8 @@ func (s *RESTService) DeleteAPI(id uint) error {
 
 // RequestConfig
 
-func (s *RESTService) CreateConfig(config *OutgoingRequestConfig) (*OutgoingRequestConfig, error) {
-	config.ID = 0
+func (s *RESTService) CreateConfig(configRequest *OutgoingRequestConfigRequest) (*OutgoingRequestConfig, error) {
+	config := outgoingRequestConfigRequestToDBModel(configRequest)
 	err := s.requestConfigDAO.Create(config)
 	return config, err
 }
@@ -84,11 +82,13 @@ func (s *RESTService) GetConfig(id uint) (*OutgoingRequestConfig, error) {
 	return s.requestConfigDAO.Get(id)
 }
 
-func (s *RESTService) GetAllConfigsByAPIID(id uint) ([]*OutgoingRequestConfig, error) {
-	return s.requestConfigDAO.GetAllByAPIID(id)
+func (s *RESTService) GetConfigByAPIID(id uint) (*OutgoingRequestConfig, error) {
+	return s.requestConfigDAO.GetByAPIID(id)
 }
 
-func (s *RESTService) UpdateConfig(config *OutgoingRequestConfig) (*OutgoingRequestConfig, error) {
+func (s *RESTService) UpdateConfig(id uint, configRequest *OutgoingRequestConfigRequest) (*OutgoingRequestConfig, error) {
+	config := outgoingRequestConfigRequestToDBModel(configRequest)
+	config.ID = id
 	err := s.requestConfigDAO.Update(config)
 	return config, err
 }
@@ -99,8 +99,8 @@ func (s *RESTService) DeleteConfig(id uint) error {
 
 // ShorteningRule
 
-func (s *RESTService) CreateRule(rule *ShorteningRule) (*ShorteningRule, error) {
-	rule.ID = 0
+func (s *RESTService) CreateRule(ruleRequest *ShorteningRuleRequest) (*ShorteningRule, error) {
+	rule := shorteningRuleRequestToDBModel(ruleRequest)
 	err := s.ruleDAO.Create(rule)
 	return rule, err
 }
@@ -113,7 +113,9 @@ func (s *RESTService) GetAllRulesByAPIID(id uint) ([]*ShorteningRule, error) {
 	return s.ruleDAO.GetAllByAPIID(id)
 }
 
-func (s *RESTService) UpdateRule(rule *ShorteningRule) (*ShorteningRule, error) {
+func (s *RESTService) UpdateRule(id uint, ruleRequest *ShorteningRuleRequest) (*ShorteningRule, error) {
+	rule := shorteningRuleRequestToDBModel(ruleRequest)
+	rule.ID = id
 	err := s.ruleDAO.Update(rule)
 	return rule, err
 }
@@ -124,8 +126,8 @@ func (s *RESTService) DeleteRule(id uint) error {
 
 // Header
 
-func (s *RESTService) CreateRequestHeader(header *OutgoingRequestHeader) (*OutgoingRequestHeader, error) {
-	header.ID = 0
+func (s *RESTService) CreateRequestHeader(headerRequest *OutgoingRequestHeaderRequest) (*OutgoingRequestHeader, error) {
+	header := outgoingRequestHeaderRequestToDBModel(headerRequest)
 	err := s.requestHeaderDAO.Create(header)
 	return header, err
 }
@@ -138,7 +140,9 @@ func (s *RESTService) GetAllRequestHeadersByConfigID(id uint) ([]*OutgoingReques
 	return s.requestHeaderDAO.GetAllByConfigID(id)
 }
 
-func (s *RESTService) UpdateRequestHeader(header *OutgoingRequestHeader) (*OutgoingRequestHeader, error) {
+func (s *RESTService) UpdateRequestHeader(id uint, headerRequest *OutgoingRequestHeaderRequest) (*OutgoingRequestHeader, error) {
+	header := outgoingRequestHeaderRequestToDBModel(headerRequest)
+	header.ID = id
 	err := s.requestHeaderDAO.Update(header)
 	return header, err
 }
@@ -149,8 +153,8 @@ func (s *RESTService) DeleteRequestHeader(id uint) error {
 
 // Param
 
-func (s *RESTService) CreateRequestParam(param *OutgoingRequestParam) (*OutgoingRequestParam, error) {
-	param.ID = 0
+func (s *RESTService) CreateRequestParam(paramRequest *OutgoingRequestParamRequest) (*OutgoingRequestParam, error) {
+	param := outgoingRequestParamRequestToDBModel(paramRequest)
 	err := s.requestParamDAO.Create(param)
 	return param, err
 }
@@ -163,7 +167,9 @@ func (s *RESTService) GetAllRequestParamsByConfigID(id uint) ([]*OutgoingRequest
 	return s.requestParamDAO.GetAllByConfigID(id)
 }
 
-func (s *RESTService) UpdateRequestParam(param *OutgoingRequestParam) (*OutgoingRequestParam, error) {
+func (s *RESTService) UpdateRequestParam(id uint, paramRequest *OutgoingRequestParamRequest) (*OutgoingRequestParam, error) {
+	param := outgoingRequestParamRequestToDBModel(paramRequest)
+	param.ID = id
 	err := s.requestParamDAO.Update(param)
 	return param, err
 }

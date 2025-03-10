@@ -50,7 +50,7 @@ curl http://localhost:8080/api/63?token=MY_TOKEN_FROM_API_KEY
 |----|------|-----------|
 |`/rest/configs`|POST|Create OutgoingRequestConfig from JSON|
 |`/rest/configs/:id`|GET|Get OutgoingRequestConfig by ID|
-|`/rest/configs/?apiID=API_ID`|GET|Get all OutgoingRequestConfigs by ShortenedAPI ID|
+|`/rest/configs/?apiID=API_ID`|GET|Get OutgoingRequestConfig by ShortenedAPI ID|
 |`/rest/configs`|PUT|Update OutgoingRequestConfig from JSON|
 |`/rest/configs/:id`|DELETE|Delete OutgoingRequestConfig by ID|
 

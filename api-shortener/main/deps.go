@@ -5,7 +5,6 @@ import (
 	"api-shortener/security"
 	"api-shortener/shortreq"
 	"context"
-	"fmt"
 	"net"
 	"net/http"
 
@@ -37,7 +36,6 @@ func appendGinToLifecycle(lc fx.Lifecycle, r *gin.Engine) *http.Server {
 			if err != nil {
 				return err
 			}
-			fmt.Println("Starting HTTP server at", srv.Addr)
 			go srv.Serve(ln)
 			return nil
 		},

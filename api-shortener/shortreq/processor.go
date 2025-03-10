@@ -24,30 +24,46 @@ type IIncomingRequestProcessor interface {
 }
 
 type IncomingRequestProcessor struct {
-	configDAO restapi.IOutgoingRequestConfigDAO
+	configDAO  restapi.IOutgoingRequestConfigDAO
+	headersDAO restapi.IOutgoingRequestHeaderDAO
+	paramsDAO  restapi.IOutgoingRequestParamDAO
 }
 
 func (processor *IncomingRequestProcessor) CreateOutgoingRequest(api *restapi.ShortenedAPI) (*http.Request, error) {
-	requestConfigs, _ := processor.configDAO.GetAllByAPIID(api.ID)
-	requestConfig := requestConfigs[0]
+	requestConfig, err := processor.configDAO.GetByAPIID(api.ID)
+	if err != nil {
+		return nil, &RequestCreationError{err: err}
+	}
 	request, err := http.NewRequest(requestConfig.Method, requestConfig.Url, strings.NewReader(requestConfig.Body))
 	if err != nil {
 		return nil, &RequestCreationError{err: err}
 	}
 
-	for _, header := range requestConfig.Headers {
+	headers, err := processor.headersDAO.GetAllByConfigID(requestConfig.ID)
+	if err != nil {
+		return nil, &RequestCreationError{err: err}
+	}
+	for _, header := range headers {
 		request.Header.Add(header.Name, header.Value)
 	}
+	params, err := processor.paramsDAO.GetAllByConfigID(requestConfig.ID)
+	if err != nil {
+		return nil, &RequestCreationError{err: err}
+	}
 	q := request.URL.Query()
-	for _, param := range requestConfig.Params {
+	for _, param := range params {
 		q.Add(param.Name, param.Value)
 	}
 	request.URL.RawQuery = q.Encode()
 	return request, err
 }
 
-func NewIncomingRequestProcessor(configDAO restapi.IOutgoingRequestConfigDAO) IIncomingRequestProcessor {
-	return &IncomingRequestProcessor{configDAO: configDAO}
+func NewIncomingRequestProcessor(
+	configDAO restapi.IOutgoingRequestConfigDAO,
+	headersDAO restapi.IOutgoingRequestHeaderDAO,
+	paramsDAO restapi.IOutgoingRequestParamDAO,
+) IIncomingRequestProcessor {
+	return &IncomingRequestProcessor{configDAO: configDAO, headersDAO: headersDAO, paramsDAO: paramsDAO}
 }
 
 type IOutgoingRequestProcessor interface {
@@ -56,7 +72,6 @@ type IOutgoingRequestProcessor interface {
 
 type OutgoingRequestProcessor struct {
 	jsonResponseShortener *JSONResponseShortener
-	rulesResolver         IRulesResolver
 	client                IOutgoingRequestClient
 }
 
@@ -80,13 +95,7 @@ func (processor *OutgoingRequestProcessor) Process(request *http.Request, c *gin
 		c.Writer.Header().Add(headerName, response.Header.Get(headerName))
 	}
 
-	rules, err := processor.rulesResolver.GetRules(api)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		logrus.Errorf("Getting transformation rules for API %d: %s", api.ID, err.Error())
-		return
-	}
-
+	rules := processor.getRules(api)
 	result, err := processor.jsonResponseShortener.Shorten(body, rules)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -97,14 +106,20 @@ func (processor *OutgoingRequestProcessor) Process(request *http.Request, c *gin
 	c.JSON(response.StatusCode, result)
 }
 
+func (processor *OutgoingRequestProcessor) getRules(api *restapi.ShortenedAPI) map[string]string {
+	resultRules := make(map[string]string)
+	for _, rule := range api.ShorteningRules {
+		resultRules[rule.FieldName] = rule.FieldValueQuery
+	}
+	return resultRules
+}
+
 func NewOutgoingRequestProcessor(
 	jsonShortener *JSONResponseShortener,
-	rulesResolver IRulesResolver,
 	client IOutgoingRequestClient,
 ) IOutgoingRequestProcessor {
 	return &OutgoingRequestProcessor{
 		jsonResponseShortener: jsonShortener,
-		rulesResolver:         rulesResolver,
 		client:                client,
 	}
 }

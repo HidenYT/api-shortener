@@ -47,7 +47,11 @@ func (dao *ShorteningRuleDAO) Update(api *ShorteningRule) error {
 }
 
 func (dao *ShorteningRuleDAO) Delete(id uint) error {
-	return dao.db.Delete(&ShorteningRule{}, id).Error
+	rule, err := dao.Get(id)
+	if err != nil {
+		return err
+	}
+	return dao.db.Unscoped().Delete(rule).Error
 }
 
 func NewShorteningRuleDAO(conn *gorm.DB, validate *validator.Validate) IShorteningRuleDAO {

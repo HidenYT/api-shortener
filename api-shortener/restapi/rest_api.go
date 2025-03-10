@@ -26,9 +26,9 @@ func AttachRESTAPIGroup(r *gin.Engine, RESTService IRESTService) {
 		getOutgoingRequestConfig(c, RESTService)
 	})
 	configGroup.GET("/", func(c *gin.Context) {
-		getAllOutgoingRequestConfigsByAPIID(c, RESTService)
+		getOutgoingRequestConfigByAPIID(c, RESTService)
 	})
-	configGroup.PUT("", func(c *gin.Context) {
+	configGroup.PUT("/:id", func(c *gin.Context) {
 		updateOutgoingRequestConfig(c, RESTService)
 	})
 	configGroup.DELETE("/:id", func(c *gin.Context) {
@@ -45,7 +45,7 @@ func AttachRESTAPIGroup(r *gin.Engine, RESTService IRESTService) {
 	rulesGroup.GET("/", func(c *gin.Context) {
 		getAllShorteningRulesByAPIID(c, RESTService)
 	})
-	rulesGroup.PUT("", func(c *gin.Context) {
+	rulesGroup.PUT("/:id", func(c *gin.Context) {
 		updateShorteningRule(c, RESTService)
 	})
 	rulesGroup.DELETE("/:id", func(c *gin.Context) {
@@ -62,7 +62,7 @@ func AttachRESTAPIGroup(r *gin.Engine, RESTService IRESTService) {
 	headersGroup.GET("/", func(c *gin.Context) {
 		getAllOutgoingRequestHeadersByConfigID(c, RESTService)
 	})
-	headersGroup.PUT("", func(c *gin.Context) {
+	headersGroup.PUT("/:id", func(c *gin.Context) {
 		updateOutgoingRequestHeader(c, RESTService)
 	})
 	headersGroup.DELETE("/:id", func(c *gin.Context) {
@@ -79,7 +79,7 @@ func AttachRESTAPIGroup(r *gin.Engine, RESTService IRESTService) {
 	paramsGroup.GET("/", func(c *gin.Context) {
 		getAllOutgoingRequestParamsByConfigID(c, RESTService)
 	})
-	paramsGroup.PUT("", func(c *gin.Context) {
+	paramsGroup.PUT("/:id", func(c *gin.Context) {
 		updateOutgoingRequestParam(c, RESTService)
 	})
 	paramsGroup.DELETE("/:id", func(c *gin.Context) {
@@ -87,16 +87,26 @@ func AttachRESTAPIGroup(r *gin.Engine, RESTService IRESTService) {
 	})
 }
 
+func getUintFromPath(name string, c *gin.Context) (uint, error) {
+	uintRaw, err := strconv.ParseUint(c.Param(name), 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return uint(uintRaw), nil
+}
+
+func getUintFromQuery(name string, c *gin.Context) (uint, error) {
+	apiIdRaw, err := strconv.ParseUint(c.Query(name), 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return uint(apiIdRaw), nil
+}
+
 // API
 
 func createShortenedAPI(c *gin.Context, restService IRESTService) {
-	var shortenedAPI ShortenedAPI
-	err := c.BindJSON(&shortenedAPI)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	res, err := restService.CreateAPI(&shortenedAPI)
+	res, err := restService.CreateAPI()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -105,12 +115,11 @@ func createShortenedAPI(c *gin.Context, restService IRESTService) {
 }
 
 func deleteShortenedAPI(c *gin.Context, restService IRESTService) {
-	apiIdRaw, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	apiId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	apiId := uint(apiIdRaw)
 	err = restService.DeleteAPI(apiId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -122,9 +131,8 @@ func deleteShortenedAPI(c *gin.Context, restService IRESTService) {
 // RequestConfig
 
 func createOutgoingRequestConfig(c *gin.Context, restService IRESTService) {
-	var config OutgoingRequestConfig
-	err := c.BindJSON(&config)
-	if err != nil {
+	var config OutgoingRequestConfigRequest
+	if err := c.BindJSON(&config); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -137,12 +145,11 @@ func createOutgoingRequestConfig(c *gin.Context, restService IRESTService) {
 }
 
 func getOutgoingRequestConfig(c *gin.Context, restService IRESTService) {
-	configIdRaw, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	configId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	configId := uint(configIdRaw)
 	res, err := restService.GetConfig(configId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -151,14 +158,13 @@ func getOutgoingRequestConfig(c *gin.Context, restService IRESTService) {
 	c.JSON(http.StatusOK, res)
 }
 
-func getAllOutgoingRequestConfigsByAPIID(c *gin.Context, restService IRESTService) {
-	apiIdRaw, err := strconv.ParseUint(c.Query("apiID"), 10, 32)
+func getOutgoingRequestConfigByAPIID(c *gin.Context, restService IRESTService) {
+	apiId, err := getUintFromQuery("apiID", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	apiId := uint(apiIdRaw)
-	res, err := restService.GetAllConfigsByAPIID(apiId)
+	res, err := restService.GetConfigByAPIID(apiId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -167,13 +173,17 @@ func getAllOutgoingRequestConfigsByAPIID(c *gin.Context, restService IRESTServic
 }
 
 func updateOutgoingRequestConfig(c *gin.Context, restService IRESTService) {
-	var config OutgoingRequestConfig
-	err := c.BindJSON(&config)
+	configId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	res, err := restService.UpdateConfig(&config)
+	var config OutgoingRequestConfigRequest
+	if err = c.BindJSON(&config); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := restService.UpdateConfig(configId, &config)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -182,12 +192,11 @@ func updateOutgoingRequestConfig(c *gin.Context, restService IRESTService) {
 }
 
 func deleteOutgoingRequestConfig(c *gin.Context, restService IRESTService) {
-	configIdRaw, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	configId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	configId := uint(configIdRaw)
 	err = restService.DeleteConfig(configId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -199,7 +208,7 @@ func deleteOutgoingRequestConfig(c *gin.Context, restService IRESTService) {
 // ShorteningRule
 
 func createShorteningRule(c *gin.Context, restService IRESTService) {
-	var rule ShorteningRule
+	var rule ShorteningRuleRequest
 	err := c.BindJSON(&rule)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -214,12 +223,11 @@ func createShorteningRule(c *gin.Context, restService IRESTService) {
 }
 
 func getShorteningRule(c *gin.Context, restService IRESTService) {
-	ruleIdRaw, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	ruleId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	ruleId := uint(ruleIdRaw)
 	res, err := restService.GetRule(ruleId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -229,12 +237,11 @@ func getShorteningRule(c *gin.Context, restService IRESTService) {
 }
 
 func getAllShorteningRulesByAPIID(c *gin.Context, restService IRESTService) {
-	apiIdRaw, err := strconv.ParseUint(c.Query("apiID"), 10, 32)
+	apiId, err := getUintFromQuery("apiID", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	apiId := uint(apiIdRaw)
 	res, err := restService.GetAllRulesByAPIID(apiId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -244,13 +251,17 @@ func getAllShorteningRulesByAPIID(c *gin.Context, restService IRESTService) {
 }
 
 func updateShorteningRule(c *gin.Context, restService IRESTService) {
-	var rule ShorteningRule
-	err := c.BindJSON(&rule)
+	ruleId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	res, err := restService.UpdateRule(&rule)
+	var rule ShorteningRuleRequest
+	if err = c.BindJSON(&rule); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := restService.UpdateRule(ruleId, &rule)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -259,12 +270,11 @@ func updateShorteningRule(c *gin.Context, restService IRESTService) {
 }
 
 func deleteShorteningRule(c *gin.Context, restService IRESTService) {
-	ruleIdRaw, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	ruleId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	ruleId := uint(ruleIdRaw)
 	err = restService.DeleteRule(ruleId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -276,7 +286,7 @@ func deleteShorteningRule(c *gin.Context, restService IRESTService) {
 // RequestHeader
 
 func createOutgoingRequestHeader(c *gin.Context, restService IRESTService) {
-	var header OutgoingRequestHeader
+	var header OutgoingRequestHeaderRequest
 	err := c.BindJSON(&header)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -291,12 +301,11 @@ func createOutgoingRequestHeader(c *gin.Context, restService IRESTService) {
 }
 
 func getOutgoingRequestHeader(c *gin.Context, restService IRESTService) {
-	headerIdRaw, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	headerId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	headerId := uint(headerIdRaw)
 	res, err := restService.GetRequestHeader(headerId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -306,12 +315,11 @@ func getOutgoingRequestHeader(c *gin.Context, restService IRESTService) {
 }
 
 func getAllOutgoingRequestHeadersByConfigID(c *gin.Context, restService IRESTService) {
-	configIdRaw, err := strconv.ParseUint(c.Query("configID"), 10, 32)
+	configId, err := getUintFromQuery("configID", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	configId := uint(configIdRaw)
 	res, err := restService.GetAllRequestHeadersByConfigID(configId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -321,13 +329,17 @@ func getAllOutgoingRequestHeadersByConfigID(c *gin.Context, restService IRESTSer
 }
 
 func updateOutgoingRequestHeader(c *gin.Context, restService IRESTService) {
-	var header OutgoingRequestHeader
-	err := c.BindJSON(&header)
+	headerId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	res, err := restService.UpdateRequestHeader(&header)
+	var header OutgoingRequestHeaderRequest
+	if err = c.BindJSON(&header); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := restService.UpdateRequestHeader(headerId, &header)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -336,12 +348,11 @@ func updateOutgoingRequestHeader(c *gin.Context, restService IRESTService) {
 }
 
 func deleteOutgoingRequestHeader(c *gin.Context, restService IRESTService) {
-	headerIdRaw, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	headerId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	headerId := uint(headerIdRaw)
 	err = restService.DeleteRequestHeader(headerId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -353,7 +364,7 @@ func deleteOutgoingRequestHeader(c *gin.Context, restService IRESTService) {
 // RequestParam
 
 func createOutgoingRequestParam(c *gin.Context, restService IRESTService) {
-	var param OutgoingRequestParam
+	var param OutgoingRequestParamRequest
 	err := c.BindJSON(&param)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -368,12 +379,11 @@ func createOutgoingRequestParam(c *gin.Context, restService IRESTService) {
 }
 
 func getOutgoingRequestParam(c *gin.Context, restService IRESTService) {
-	paramIdRaw, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	paramId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	paramId := uint(paramIdRaw)
 	res, err := restService.GetRequestParam(paramId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -383,12 +393,11 @@ func getOutgoingRequestParam(c *gin.Context, restService IRESTService) {
 }
 
 func getAllOutgoingRequestParamsByConfigID(c *gin.Context, restService IRESTService) {
-	configIdRaw, err := strconv.ParseUint(c.Query("configID"), 10, 32)
+	configId, err := getUintFromQuery("configID", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	configId := uint(configIdRaw)
 	res, err := restService.GetAllRequestParamsByConfigID(configId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -398,13 +407,17 @@ func getAllOutgoingRequestParamsByConfigID(c *gin.Context, restService IRESTServ
 }
 
 func updateOutgoingRequestParam(c *gin.Context, restService IRESTService) {
-	var param OutgoingRequestParam
-	err := c.BindJSON(&param)
+	paramId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	res, err := restService.UpdateRequestParam(&param)
+	var param OutgoingRequestParamRequest
+	if err = c.BindJSON(&param); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := restService.UpdateRequestParam(paramId, &param)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -413,12 +426,11 @@ func updateOutgoingRequestParam(c *gin.Context, restService IRESTService) {
 }
 
 func deleteOutgoingRequestParam(c *gin.Context, restService IRESTService) {
-	paramIdRaw, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	paramId, err := getUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	paramId := uint(paramIdRaw)
 	err = restService.DeleteRequestParam(paramId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
