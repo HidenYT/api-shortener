@@ -1,7 +1,7 @@
-package db
+package storage
 
 import (
-	"api-shortener/restapi"
+	"api-shortener/shortreq"
 
 	"gorm.io/gorm"
 )
@@ -16,11 +16,11 @@ type DBMigrator struct {
 
 func (m *DBMigrator) Migrate() {
 	m.DB.AutoMigrate(
-		&restapi.ShortenedAPI{},
-		&restapi.OutgoingRequestConfig{},
-		&restapi.OutgoingRequestHeader{},
-		&restapi.OutgoingRequestParam{},
-		&restapi.ShorteningRule{},
+		&shortreq.ShortenedAPI{},
+		&shortreq.OutgoingRequestConfig{},
+		&shortreq.OutgoingRequestHeader{},
+		&shortreq.OutgoingRequestParam{},
+		&shortreq.ShorteningRule{},
 	)
 }
 

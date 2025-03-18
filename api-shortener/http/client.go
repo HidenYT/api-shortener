@@ -1,4 +1,4 @@
-package shortreq
+package http
 
 import (
 	"net/http"
