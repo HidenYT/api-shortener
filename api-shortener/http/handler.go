@@ -1,6 +1,7 @@
 package http
 
 import (
+	shortener "api-shortener/response-shortener"
 	"api-shortener/shortreq"
 	"errors"
 	"fmt"
@@ -455,17 +456,17 @@ func shorteningView(c *gin.Context, shorteningService IResponseShorteningService
 	if err != nil {
 		if errors.Is(err, errRequestIsAlreadySent) {
 			c.JSON(http.StatusTooManyRequests, gin.H{"error": err.Error()})
-		} else if errors.Is(err, errWhileShorteningServerResponse) {
+		} else if errors.Is(err, shortener.ErrWhileShorteningServerResponse) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 		return
 	}
-	for header := range response.headers {
-		c.Writer.Header().Add(header, response.headers.Get(header))
+	for header := range response.Headers {
+		c.Writer.Header().Add(header, response.Headers.Get(header))
 	}
-	c.JSON(response.statusCode, response.json)
+	c.JSON(response.StatusCode, response.JSON)
 }
 
 func attachAPIShorteningGroup(r *gin.Engine, shorteningService IResponseShorteningService, apiDAO shortreq.IShortenedAPIDAO) {

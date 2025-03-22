@@ -2,6 +2,7 @@ package main
 
 import (
 	"api-shortener/http"
+	shortener "api-shortener/response-shortener"
 	"api-shortener/shortreq"
 	"api-shortener/storage"
 )
@@ -28,11 +29,13 @@ func main() {
 	paramService := http.NewRequestParamService(paramDAO)
 	ruleService := http.NewShorteningRuleService(ruleDAO)
 
-	apiClientSettings := http.NewOutgoingRequestClientSettings()
-	apiClient := http.NewOutgoingRequestClient(apiClientSettings)
+	apiClientSettings := shortener.NewOutgoingRequestClientSettings()
+	apiClient := shortener.NewOutgoingRequestClient(apiClientSettings)
+	responseShortener := shortener.NewResponseShortener(apiClient)
+
 	limiterSettings := http.NewLoopLimiterSettings()
 	limiter := http.NewLoopLimiter(limiterSettings)
-	shorteningService := http.NewResponseShorteningService(configDAO, headerDAO, paramDAO, apiClient, limiter)
+	shorteningService := http.NewResponseShorteningService(configDAO, headerDAO, paramDAO, responseShortener, limiter)
 
 	server := http.NewHTTPServer(
 		apiDAO, shorteningService, apiService, configService, headerService, paramService, ruleService,

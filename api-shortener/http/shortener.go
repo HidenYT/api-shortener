@@ -1,34 +1,29 @@
 package http
 
 import (
+	shortener "api-shortener/response-shortener"
 	"api-shortener/shortreq"
 	"errors"
-	"io"
 	"net/http"
 	"strings"
 
-	"github.com/ohler55/ojg/jp"
-	"github.com/ohler55/ojg/oj"
 	"github.com/sirupsen/logrus"
 )
 
 var (
-	errRequestIsAlreadySent          = errors.New("request is already sent")
-	errWhileMakingRequest            = errors.New("error while making request to the server")
-	errWhileCreatingRequestObject    = errors.New("error while creating request object")
-	errWhileReadingServerResponse    = errors.New("error while reading server response")
-	errWhileShorteningServerResponse = errors.New("error while shortening server response")
+	errRequestIsAlreadySent       = errors.New("request is already sent")
+	errWhileCreatingRequestObject = errors.New("error while creating request object")
 )
 
 type ResponseShorteningService struct {
 	configDAO  shortreq.IOutgoingRequestConfigDAO
 	headersDAO shortreq.IOutgoingRequestHeaderDAO
 	paramsDAO  shortreq.IOutgoingRequestParamDAO
-	client     IOutgoingRequestClient
+	shortener  shortener.IResponseShortener
 	limiter    ILoopLimiter
 }
 
-func (s *ResponseShorteningService) ProcessRequest(api *shortreq.ShortenedAPI) (*ShortenedResponse, error) {
+func (s *ResponseShorteningService) ProcessRequest(api *shortreq.ShortenedAPI) (*shortener.ShortenedResponse, error) {
 	if !s.limiter.AddNewRequest(api.ID) {
 		logrus.Warningf("Max requests limit exceeded for API %d", api.ID)
 		return nil, errRequestIsAlreadySent
@@ -72,33 +67,21 @@ func (s *ResponseShorteningService) createOutgoingRequest(api *shortreq.Shortene
 	return request, nil
 }
 
-func (s *ResponseShorteningService) processRequest(request *http.Request, api *shortreq.ShortenedAPI) (*ShortenedResponse, error) {
-	response, err := s.client.MakeRequest(request)
+func (s *ResponseShorteningService) processRequest(request *http.Request, api *shortreq.ShortenedAPI) (*shortener.ShortenedResponse, error) {
+	result, err := s.shortener.ProcessRequest(request, s.getRules(api))
 	if err != nil {
-		logrus.Errorf("Error while making request with API %d: %s", api.ID, err.Error())
-		return nil, errWhileMakingRequest
-	}
-
-	body, err := io.ReadAll(response.Body)
-	response.Body.Close()
-	if err != nil {
-		logrus.Errorf("Error decoding response body for API %d: %s", api.ID, err.Error())
-		return nil, errWhileReadingServerResponse
-	}
-
-	resultHeader := make(http.Header)
-	for headerName := range response.Header {
-		resultHeader.Add(headerName, response.Header.Get(headerName))
-	}
-
-	rules := s.getRules(api)
-	result, err := s.shorten(body, rules)
-	if err != nil {
-		logrus.Errorf("Getting shortening response for API %d: %s", api.ID, err.Error())
+		if errors.Is(err, shortener.ErrWhileMakingRequest) {
+			logrus.Errorf("Error while making request to the target server: %s", err.Error())
+		} else if errors.Is(err, shortener.ErrWhileReadingServerResponse) {
+			logrus.Errorf("Error while reading response from the target server: %s", err.Error())
+		} else if errors.Is(err, shortener.ErrWhileShorteningServerResponse) {
+			logrus.Errorf("Error while shortening response from the target server: %s", err.Error())
+		} else {
+			logrus.Errorf("Unknown error while shortening response: %s", err.Error())
+		}
 		return nil, err
 	}
-
-	return &ShortenedResponse{json: &result, statusCode: response.StatusCode, headers: resultHeader}, nil
+	return result, nil
 }
 
 func (processor *ResponseShorteningService) getRules(api *shortreq.ShortenedAPI) map[string]string {
@@ -109,45 +92,18 @@ func (processor *ResponseShorteningService) getRules(api *shortreq.ShortenedAPI)
 	return resultRules
 }
 
-func (shortener *ResponseShorteningService) shorten(body []byte, rules map[string]string) (map[string]any, error) {
-	parsedJson, err := oj.Parse(body)
-	if err != nil {
-		return map[string]any{}, errWhileShorteningServerResponse
-	}
-
-	result, err := shortener.shortenWithRules(parsedJson, rules)
-	if err != nil {
-		return map[string]any{}, errWhileShorteningServerResponse
-	}
-
-	return result, nil
-}
-
-func (shortener *ResponseShorteningService) shortenWithRules(json any, rules map[string]string) (map[string]any, error) {
-	result := make(map[string]any)
-	for rule_k, rule_v := range rules {
-		expr, err := jp.ParseString(rule_v)
-		if err != nil {
-			return map[string]any{}, errWhileShorteningServerResponse
-		}
-		parsed := expr.Get(json)
-		result[rule_k] = parsed
-	}
-	return result, nil
-}
-
 func NewResponseShorteningService(
 	configDAO shortreq.IOutgoingRequestConfigDAO,
 	headersDAO shortreq.IOutgoingRequestHeaderDAO,
 	paramsDAO shortreq.IOutgoingRequestParamDAO,
-	client IOutgoingRequestClient,
+	shortener shortener.IResponseShortener,
 	limiter ILoopLimiter,
 ) *ResponseShorteningService {
 	return &ResponseShorteningService{
 		configDAO:  configDAO,
 		headersDAO: headersDAO,
 		paramsDAO:  paramsDAO,
-		client:     client,
+		shortener:  shortener,
 		limiter:    limiter,
 	}
 }

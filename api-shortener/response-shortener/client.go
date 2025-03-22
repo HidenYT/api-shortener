@@ -1,4 +1,4 @@
-package http
+package shortener
 
 import (
 	"net/http"
@@ -8,10 +8,6 @@ import (
 	"github.com/caarlos0/env/v11"
 	"github.com/sirupsen/logrus"
 )
-
-type IOutgoingRequestClient interface {
-	MakeRequest(request *http.Request) (*http.Response, error)
-}
 
 type OutgoingRequestClientSettings struct {
 	Timeout time.Duration `env:"OUTGOING_REQUEST_CLIENT_TIMEOUT" envDefault:"1s"`

@@ -2,7 +2,6 @@ package http
 
 import (
 	"api-shortener/shortreq"
-	"net/http"
 )
 
 type OutgoingRequestConfigRequest struct {
@@ -61,10 +60,4 @@ func shorteningRuleRequestToDBModel(request *ShorteningRuleRequest) *shortreq.Sh
 		FieldValueQuery: request.FieldValueQuery,
 		ShortenedAPIID:  request.ShortenedAPIID,
 	}
-}
-
-type ShortenedResponse struct {
-	json       *map[string]any
-	statusCode int
-	headers    http.Header
 }

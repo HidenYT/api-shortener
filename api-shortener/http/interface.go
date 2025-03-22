@@ -1,6 +1,7 @@
 package http
 
 import (
+	shortener "api-shortener/response-shortener"
 	"api-shortener/shortreq"
 )
 
@@ -43,5 +44,5 @@ type IRequestParamService interface {
 }
 
 type IResponseShorteningService interface {
-	ProcessRequest(api *shortreq.ShortenedAPI) (*ShortenedResponse, error)
+	ProcessRequest(api *shortreq.ShortenedAPI) (*shortener.ShortenedResponse, error)
 }
