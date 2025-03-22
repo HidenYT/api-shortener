@@ -454,19 +454,21 @@ func shorteningView(c *gin.Context, shorteningService IResponseShorteningService
 	api := c.MustGet(CTX_API_KEY)
 	response, err := shorteningService.ProcessRequest(api.(*shortreq.ShortenedAPI))
 	if err != nil {
+		var status int
 		if errors.Is(err, errRequestIsAlreadySent) {
-			c.JSON(http.StatusTooManyRequests, gin.H{"error": err.Error()})
+			status = http.StatusTooManyRequests
 		} else if errors.Is(err, shortener.ErrWhileShorteningServerResponse) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			status = http.StatusBadRequest
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			status = http.StatusInternalServerError
 		}
+		c.JSON(status, shortenedAPIResponseFromError(err))
 		return
 	}
 	for header := range response.Headers {
 		c.Writer.Header().Add(header, response.Headers.Get(header))
 	}
-	c.JSON(response.StatusCode, response.JSON)
+	c.JSON(response.StatusCode, shortenedAPIResponseFromResponse(response))
 }
 
 func attachAPIShorteningGroup(r *gin.Engine, shorteningService IResponseShorteningService, apiDAO shortreq.IShortenedAPIDAO) {
