@@ -3,7 +3,6 @@ package shortreq
 type IShortenedAPIDAO interface {
 	Create() (*ShortenedAPI, error)
 	Get(id uint) (*ShortenedAPI, error)
-	Update(api *ShortenedAPI) error
 	Delete(id uint) error
 }
 

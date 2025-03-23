@@ -12,12 +12,12 @@ type OutgoingRequestConfigDAO struct {
 	validate *validator.Validate
 }
 
-func (dao *OutgoingRequestConfigDAO) Create(api *shortreq.OutgoingRequestConfig) error {
-	err := dao.validate.Struct(api)
+func (dao *OutgoingRequestConfigDAO) Create(config *shortreq.OutgoingRequestConfig) error {
+	err := dao.validate.Struct(config)
 	if err != nil {
 		return err
 	}
-	return dao.db.Create(api).Error
+	return dao.db.Create(config).Error
 }
 
 func (dao *OutgoingRequestConfigDAO) Get(id uint) (*shortreq.OutgoingRequestConfig, error) {
@@ -32,12 +32,12 @@ func (dao *OutgoingRequestConfigDAO) GetByAPIID(apiID uint) (*shortreq.OutgoingR
 	return result, takeResult.Error
 }
 
-func (dao *OutgoingRequestConfigDAO) Update(api *shortreq.OutgoingRequestConfig) error {
-	err := dao.validate.Struct(api)
+func (dao *OutgoingRequestConfigDAO) Update(config *shortreq.OutgoingRequestConfig) error {
+	err := dao.validate.Struct(config)
 	if err != nil {
 		return err
 	}
-	return dao.db.Updates(api).Error
+	return dao.db.Updates(config).Error
 }
 
 func (dao *OutgoingRequestConfigDAO) Delete(id uint) error {
