@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/caarlos0/env/v11"
+	"github.com/sirupsen/logrus"
 )
 
 type LoopLimiterSettings struct {
@@ -46,7 +47,7 @@ func (l *MapLoopLimiter) RemoveRequest(apiId uint) {
 func NewLoopLimiterSettings() *LoopLimiterSettings {
 	var cfg LoopLimiterSettings
 	if err := env.Parse(&cfg); err != nil {
-		panic(err)
+		logrus.Fatalf("Couldn't parse LoopLimiterSettings from env: %s", err)
 	}
 	return &cfg
 }

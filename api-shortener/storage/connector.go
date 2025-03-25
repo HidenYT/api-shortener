@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/caarlos0/env/v11"
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -34,7 +35,7 @@ func CreateDB(settings *DBCreationSettings) (*gorm.DB, error) {
 func NewDBConnectionSettings() *DBCreationSettings {
 	var cfg DBCreationSettings
 	if err := env.Parse(&cfg); err != nil {
-		panic(err)
+		logrus.Fatalf("Couldn't parse DBCreationSettings from env: %s", err)
 	}
 	return &cfg
 }
@@ -42,7 +43,7 @@ func NewDBConnectionSettings() *DBCreationSettings {
 func NewDB(settings *DBCreationSettings) *gorm.DB {
 	db, err := CreateDB(settings)
 	if err != nil {
-		panic(err.Error())
+		logrus.Fatalf("Couldn't connect to the DB: %s", err)
 	}
 	return db
 }

@@ -39,7 +39,7 @@ func (c *OutgoingRequestClient) MakeRequest(request *http.Request) (*http.Respon
 func NewOutgoingRequestClientSettings() *OutgoingRequestClientSettings {
 	var cfg OutgoingRequestClientSettings
 	if err := env.Parse(&cfg); err != nil {
-		panic(err)
+		logrus.Fatalf("Couldn't parse OutgoingRequestClientSettings from env: %s", err)
 	}
 	return &cfg
 }

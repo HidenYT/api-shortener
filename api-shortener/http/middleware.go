@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -27,7 +28,7 @@ func apiTokenChecker() gin.HandlerFunc {
 		passedToken := c.Query(API_AUTH_TOKEN_QUERY_KEY)
 		realToken, ok := os.LookupEnv(API_AUTH_TOKEN_ENV_KEY)
 		if !ok {
-			panic("No API token found in envs")
+			logrus.Fatalf("API_AUTH_TOKEN_ENV_KEY not found in env")
 		}
 		if passedToken == realToken {
 			c.Next()
