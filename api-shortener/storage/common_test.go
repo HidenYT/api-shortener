@@ -41,6 +41,8 @@ func TestMain(m *testing.M) {
 	testOutgoingRequestHeaderDAO = storage.NewOutgoingRequestHeaderDAO(db, validator)
 	testOutgoingRequestParamDAO = storage.NewOutgoingRequestParamDAO(db, validator)
 	testOutgoingRequestConfigDAO = storage.NewOutgoingRequestConfigDAO(db, validator)
-	os.Exit(m.Run())
+
+	code := m.Run()
 	os.Clearenv()
+	os.Exit(code)
 }

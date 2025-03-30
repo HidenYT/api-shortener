@@ -27,12 +27,9 @@ func (c *OutgoingRequestClient) MakeRequest(request *http.Request) (*http.Respon
 		attemptsCount++
 		var err error
 		response, err = c.client.Do(request)
-		if err != nil {
-			return err
-		}
 		return err
 	}, retry.Attempts(uint(c.settings.Retries)))
-	logrus.Infof("Finished request to %s%s in %d attempts", request.URL.Host, request.URL.RequestURI(), attemptsCount)
+	logrus.Infof("Finished request to %s://%s%s in %d attempts", request.URL.Scheme, request.URL.Host, request.URL.RequestURI(), attemptsCount)
 	return response, err
 }
 

@@ -40,7 +40,7 @@ func (s *ResponseShortener) ProcessRequest(request *http.Request, rules map[stri
 		resultHeader.Add(headerName, response.Header.Get(headerName))
 	}
 
-	result, err := s.shortenRawBody(body, rules)
+	result, err := shortenRawBody(body, rules)
 	if err != nil {
 		return nil, err
 	}
@@ -48,13 +48,13 @@ func (s *ResponseShortener) ProcessRequest(request *http.Request, rules map[stri
 	return &ShortenedResponse{JSON: &result, StatusCode: response.StatusCode, Headers: resultHeader}, nil
 }
 
-func (shortener *ResponseShortener) shortenRawBody(body []byte, rules map[string]string) (map[string]any, error) {
+func shortenRawBody(body []byte, rules map[string]string) (map[string]any, error) {
 	parsedJson, err := oj.Parse(body)
 	if err != nil {
 		return map[string]any{}, ErrWhileShorteningServerResponse
 	}
 
-	result, err := shortener.shortenJSON(parsedJson, rules)
+	result, err := shortenJSON(parsedJson, rules)
 	if err != nil {
 		return map[string]any{}, ErrWhileShorteningServerResponse
 	}
@@ -62,7 +62,7 @@ func (shortener *ResponseShortener) shortenRawBody(body []byte, rules map[string
 	return result, nil
 }
 
-func (shortener *ResponseShortener) shortenJSON(json any, rules map[string]string) (map[string]any, error) {
+func shortenJSON(json any, rules map[string]string) (map[string]any, error) {
 	result := make(map[string]any)
 	for rule_k, rule_v := range rules {
 		expr, err := jp.ParseString(rule_v)
