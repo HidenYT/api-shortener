@@ -1,8 +1,6 @@
-package storage
+package shortreq
 
 import (
-	"api-shortener/shortreq"
-
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
@@ -12,13 +10,13 @@ type ShortenedAPIDAO struct {
 	validate *validator.Validate
 }
 
-func (dao *ShortenedAPIDAO) Create() (*shortreq.ShortenedAPI, error) {
-	api := &shortreq.ShortenedAPI{}
+func (dao *ShortenedAPIDAO) Create() (*ShortenedAPI, error) {
+	api := &ShortenedAPI{}
 	return api, dao.db.Create(api).Error
 }
 
-func (dao *ShortenedAPIDAO) Get(id uint) (*shortreq.ShortenedAPI, error) {
-	result := &shortreq.ShortenedAPI{}
+func (dao *ShortenedAPIDAO) Get(id uint) (*ShortenedAPI, error) {
+	result := &ShortenedAPI{}
 	takeResult := dao.db.Where("ID = ?", id).Preload("ShorteningRules").Take(result)
 	return result, takeResult.Error
 }

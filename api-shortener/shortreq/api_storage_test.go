@@ -1,4 +1,4 @@
-package storage_test
+package shortreq_test
 
 import (
 	"api-shortener/shortreq"

@@ -1,8 +1,6 @@
-package storage
+package shortreq
 
 import (
-	"api-shortener/shortreq"
-
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
@@ -12,7 +10,7 @@ type OutgoingRequestParamDAO struct {
 	validate *validator.Validate
 }
 
-func (dao *OutgoingRequestParamDAO) Create(param *shortreq.OutgoingRequestParam) error {
+func (dao *OutgoingRequestParamDAO) Create(param *OutgoingRequestParam) error {
 	err := dao.validate.Struct(param)
 	if err != nil {
 		return err
@@ -20,19 +18,19 @@ func (dao *OutgoingRequestParamDAO) Create(param *shortreq.OutgoingRequestParam)
 	return dao.db.Create(param).Error
 }
 
-func (dao *OutgoingRequestParamDAO) Get(id uint) (*shortreq.OutgoingRequestParam, error) {
-	result := &shortreq.OutgoingRequestParam{}
+func (dao *OutgoingRequestParamDAO) Get(id uint) (*OutgoingRequestParam, error) {
+	result := &OutgoingRequestParam{}
 	takeResult := dao.db.Where("ID = ?", id).Take(result)
 	return result, takeResult.Error
 }
 
-func (dao *OutgoingRequestParamDAO) GetAllByConfigID(configID uint) ([]*shortreq.OutgoingRequestParam, error) {
-	var result []*shortreq.OutgoingRequestParam
+func (dao *OutgoingRequestParamDAO) GetAllByConfigID(configID uint) ([]*OutgoingRequestParam, error) {
+	var result []*OutgoingRequestParam
 	takeResult := dao.db.Where("Outgoing_Request_Config_ID = ?", configID).Find(&result)
 	return result, takeResult.Error
 }
 
-func (dao *OutgoingRequestParamDAO) Update(param *shortreq.OutgoingRequestParam) error {
+func (dao *OutgoingRequestParamDAO) Update(param *OutgoingRequestParam) error {
 	err := dao.validate.Struct(param)
 	if err != nil {
 		return err

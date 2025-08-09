@@ -5,10 +5,13 @@ import (
 	shortener "api-shortener/response-shortener"
 	"api-shortener/shortreq"
 	"api-shortener/storage"
+
+	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	LoadEnv()
+	loadEnv()
 
 	validator := shortreq.NewValidate()
 
@@ -17,11 +20,11 @@ func main() {
 	migrator := storage.NewMigrator(db)
 	migrator.Migrate()
 
-	apiDAO := storage.NewShortenedAPIDAO(db, validator)
-	configDAO := storage.NewOutgoingRequestConfigDAO(db, validator)
-	headerDAO := storage.NewOutgoingRequestHeaderDAO(db, validator)
-	paramDAO := storage.NewOutgoingRequestParamDAO(db, validator)
-	ruleDAO := storage.NewShorteningRuleDAO(db, validator)
+	apiDAO := shortreq.NewShortenedAPIDAO(db, validator)
+	configDAO := shortreq.NewOutgoingRequestConfigDAO(db, validator)
+	headerDAO := shortreq.NewOutgoingRequestHeaderDAO(db, validator)
+	paramDAO := shortreq.NewOutgoingRequestParamDAO(db, validator)
+	ruleDAO := shortreq.NewShorteningRuleDAO(db, validator)
 
 	apiService := http.NewAPIService(apiDAO)
 	configService := http.NewRequestConfigService(configDAO)
@@ -42,4 +45,12 @@ func main() {
 	)
 
 	server.Run()
+}
+
+const ENV_FILE_NAME = ".env"
+
+func loadEnv() {
+	if err := godotenv.Load(ENV_FILE_NAME); err != nil {
+		logrus.Fatalf("Couldn't parse load env from %s: %s", ENV_FILE_NAME, err)
+	}
 }

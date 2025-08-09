@@ -1,8 +1,6 @@
-package storage
+package shortreq
 
 import (
-	"api-shortener/shortreq"
-
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
@@ -12,7 +10,7 @@ type OutgoingRequestHeaderDAO struct {
 	validate *validator.Validate
 }
 
-func (dao *OutgoingRequestHeaderDAO) Create(header *shortreq.OutgoingRequestHeader) error {
+func (dao *OutgoingRequestHeaderDAO) Create(header *OutgoingRequestHeader) error {
 	err := dao.validate.Struct(header)
 	if err != nil {
 		return err
@@ -20,19 +18,19 @@ func (dao *OutgoingRequestHeaderDAO) Create(header *shortreq.OutgoingRequestHead
 	return dao.db.Create(header).Error
 }
 
-func (dao *OutgoingRequestHeaderDAO) Get(id uint) (*shortreq.OutgoingRequestHeader, error) {
-	result := &shortreq.OutgoingRequestHeader{}
+func (dao *OutgoingRequestHeaderDAO) Get(id uint) (*OutgoingRequestHeader, error) {
+	result := &OutgoingRequestHeader{}
 	takeResult := dao.db.Where("ID = ?", id).Take(result)
 	return result, takeResult.Error
 }
 
-func (dao *OutgoingRequestHeaderDAO) GetAllByConfigID(configID uint) ([]*shortreq.OutgoingRequestHeader, error) {
-	var result []*shortreq.OutgoingRequestHeader
+func (dao *OutgoingRequestHeaderDAO) GetAllByConfigID(configID uint) ([]*OutgoingRequestHeader, error) {
+	var result []*OutgoingRequestHeader
 	takeResult := dao.db.Where("Outgoing_Request_Config_ID = ?", configID).Find(&result)
 	return result, takeResult.Error
 }
 
-func (dao *OutgoingRequestHeaderDAO) Update(header *shortreq.OutgoingRequestHeader) error {
+func (dao *OutgoingRequestHeaderDAO) Update(header *OutgoingRequestHeader) error {
 	err := dao.validate.Struct(header)
 	if err != nil {
 		return err

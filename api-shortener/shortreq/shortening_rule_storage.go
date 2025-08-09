@@ -1,8 +1,6 @@
-package storage
+package shortreq
 
 import (
-	"api-shortener/shortreq"
-
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
@@ -12,7 +10,7 @@ type ShorteningRuleDAO struct {
 	validate *validator.Validate
 }
 
-func (dao *ShorteningRuleDAO) Create(api *shortreq.ShorteningRule) error {
+func (dao *ShorteningRuleDAO) Create(api *ShorteningRule) error {
 	err := dao.validate.Struct(api)
 	if err != nil {
 		return err
@@ -20,19 +18,19 @@ func (dao *ShorteningRuleDAO) Create(api *shortreq.ShorteningRule) error {
 	return dao.db.Create(api).Error
 }
 
-func (dao *ShorteningRuleDAO) Get(id uint) (*shortreq.ShorteningRule, error) {
-	result := &shortreq.ShorteningRule{}
+func (dao *ShorteningRuleDAO) Get(id uint) (*ShorteningRule, error) {
+	result := &ShorteningRule{}
 	takeResult := dao.db.Where("ID = ?", id).Take(result)
 	return result, takeResult.Error
 }
 
-func (dao *ShorteningRuleDAO) GetAllByAPIID(apiID uint) ([]*shortreq.ShorteningRule, error) {
-	var result []*shortreq.ShorteningRule
+func (dao *ShorteningRuleDAO) GetAllByAPIID(apiID uint) ([]*ShorteningRule, error) {
+	var result []*ShorteningRule
 	takeResult := dao.db.Where("Shortened_API_ID = ?", apiID).Find(&result)
 	return result, takeResult.Error
 }
 
-func (dao *ShorteningRuleDAO) Update(api *shortreq.ShorteningRule) error {
+func (dao *ShorteningRuleDAO) Update(api *ShorteningRule) error {
 	err := dao.validate.Struct(api)
 	if err != nil {
 		return err

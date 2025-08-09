@@ -1,8 +1,6 @@
-package storage
+package shortreq
 
 import (
-	"api-shortener/shortreq"
-
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
@@ -12,7 +10,7 @@ type OutgoingRequestConfigDAO struct {
 	validate *validator.Validate
 }
 
-func (dao *OutgoingRequestConfigDAO) Create(config *shortreq.OutgoingRequestConfig) error {
+func (dao *OutgoingRequestConfigDAO) Create(config *OutgoingRequestConfig) error {
 	err := dao.validate.Struct(config)
 	if err != nil {
 		return err
@@ -20,19 +18,19 @@ func (dao *OutgoingRequestConfigDAO) Create(config *shortreq.OutgoingRequestConf
 	return dao.db.Create(config).Error
 }
 
-func (dao *OutgoingRequestConfigDAO) Get(id uint) (*shortreq.OutgoingRequestConfig, error) {
-	result := &shortreq.OutgoingRequestConfig{}
+func (dao *OutgoingRequestConfigDAO) Get(id uint) (*OutgoingRequestConfig, error) {
+	result := &OutgoingRequestConfig{}
 	takeResult := dao.db.Where("ID = ?", id).Take(result)
 	return result, takeResult.Error
 }
 
-func (dao *OutgoingRequestConfigDAO) GetByAPIID(apiID uint) (*shortreq.OutgoingRequestConfig, error) {
-	result := &shortreq.OutgoingRequestConfig{}
+func (dao *OutgoingRequestConfigDAO) GetByAPIID(apiID uint) (*OutgoingRequestConfig, error) {
+	result := &OutgoingRequestConfig{}
 	takeResult := dao.db.Where("Shortened_API_ID = ?", apiID).Take(&result)
 	return result, takeResult.Error
 }
 
-func (dao *OutgoingRequestConfigDAO) Update(config *shortreq.OutgoingRequestConfig) error {
+func (dao *OutgoingRequestConfigDAO) Update(config *OutgoingRequestConfig) error {
 	err := dao.validate.Struct(config)
 	if err != nil {
 		return err
