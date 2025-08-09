@@ -28,7 +28,7 @@ func (settings *DBConnectionSettings) String() string {
 	)
 }
 
-func CreateDBConnection(settings *DBConnectionSettings) (*gorm.DB, error) {
+func createDBConnection(settings *DBConnectionSettings) (*gorm.DB, error) {
 	return gorm.Open(postgres.Open(settings.String()), &gorm.Config{})
 }
 
@@ -41,7 +41,7 @@ func NewDBConnectionSettings() *DBConnectionSettings {
 }
 
 func NewDB(settings *DBConnectionSettings) *gorm.DB {
-	db, err := CreateDBConnection(settings)
+	db, err := createDBConnection(settings)
 	if err != nil {
 		logrus.Fatalf("Couldn't connect to the DB: %s", err)
 	}
