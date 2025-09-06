@@ -1,15 +1,15 @@
-package shortreq_test
+package api_dao_test
 
 import (
 	"sort"
 	"testing"
 
-	"github.com/HidenYT/api-shortener/internal/shortreq"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 	"github.com/stretchr/testify/require"
 )
 
-func createShortenedAPI(t *testing.T) *shortreq.ShortenedAPI {
+func createShortenedAPI(t *testing.T) *api_dao.ShortenedAPI {
 	shortenedAPI, err := testShortenedAPIDAO.Create()
 
 	require.NoError(t, err)
@@ -52,7 +52,7 @@ func TestDeleteShortenedAPI(t *testing.T) {
 
 func TestGetShortenedAPIWithRules(t *testing.T) {
 	shortenedAPI1 := createShortenedAPI(t)
-	rules1 := []*shortreq.ShorteningRule{createShorteningRule(t, shortenedAPI1.ID), createShorteningRule(t, shortenedAPI1.ID)}
+	rules1 := []*api_dao.ShorteningRule{createShorteningRule(t, shortenedAPI1.ID), createShorteningRule(t, shortenedAPI1.ID)}
 
 	shortenedAPI2, err := testShortenedAPIDAO.Get(shortenedAPI1.ID)
 

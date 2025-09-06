@@ -1,43 +1,41 @@
 package http
 
-import (
-	"github.com/HidenYT/api-shortener/internal/shortreq"
-)
+import api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 type IAPIService interface {
-	Create() (*shortreq.ShortenedAPI, error)
-	GetByID(id uint) (*shortreq.ShortenedAPI, error)
+	Create() (*api_dao.ShortenedAPI, error)
+	GetByID(id uint) (*api_dao.ShortenedAPI, error)
 	Delete(id uint) error
 }
 
 type IRequestConfigService interface {
-	Create(api *OutgoingRequestConfigRequest) (*shortreq.OutgoingRequestConfig, error)
-	GetByID(id uint) (*shortreq.OutgoingRequestConfig, error)
-	GetByAPIID(apiID uint) (*shortreq.OutgoingRequestConfig, error)
-	Update(id uint, api *OutgoingRequestConfigRequest) (*shortreq.OutgoingRequestConfig, error)
+	Create(api *OutgoingRequestConfigRequest) (*api_dao.OutgoingRequestConfig, error)
+	GetByID(id uint) (*api_dao.OutgoingRequestConfig, error)
+	GetByAPIID(apiID uint) (*api_dao.OutgoingRequestConfig, error)
+	Update(id uint, api *OutgoingRequestConfigRequest) (*api_dao.OutgoingRequestConfig, error)
 	Delete(id uint) error
 }
 
 type IShorteningRuleService interface {
-	Create(api *ShorteningRuleRequest) (*shortreq.ShorteningRule, error)
-	GetByID(id uint) (*shortreq.ShorteningRule, error)
-	GetAllByAPIID(apiID uint) ([]*shortreq.ShorteningRule, error)
-	Update(id uint, api *ShorteningRuleRequest) (*shortreq.ShorteningRule, error)
+	Create(api *ShorteningRuleRequest) (*api_dao.ShorteningRule, error)
+	GetByID(id uint) (*api_dao.ShorteningRule, error)
+	GetAllByAPIID(apiID uint) ([]*api_dao.ShorteningRule, error)
+	Update(id uint, api *ShorteningRuleRequest) (*api_dao.ShorteningRule, error)
 	Delete(id uint) error
 }
 
 type IRequestHeaderService interface {
-	Create(api *OutgoingRequestHeaderRequest) (*shortreq.OutgoingRequestHeader, error)
-	GetByID(id uint) (*shortreq.OutgoingRequestHeader, error)
-	GetAllByConfigID(apiID uint) ([]*shortreq.OutgoingRequestHeader, error)
-	Update(id uint, api *OutgoingRequestHeaderRequest) (*shortreq.OutgoingRequestHeader, error)
+	Create(api *OutgoingRequestHeaderRequest) (*api_dao.OutgoingRequestHeader, error)
+	GetByID(id uint) (*api_dao.OutgoingRequestHeader, error)
+	GetAllByConfigID(apiID uint) ([]*api_dao.OutgoingRequestHeader, error)
+	Update(id uint, api *OutgoingRequestHeaderRequest) (*api_dao.OutgoingRequestHeader, error)
 	Delete(id uint) error
 }
 
 type IRequestParamService interface {
-	Create(api *OutgoingRequestParamRequest) (*shortreq.OutgoingRequestParam, error)
-	GetByID(id uint) (*shortreq.OutgoingRequestParam, error)
-	GetAllByConfigID(apiID uint) ([]*shortreq.OutgoingRequestParam, error)
-	Update(id uint, api *OutgoingRequestParamRequest) (*shortreq.OutgoingRequestParam, error)
+	Create(api *OutgoingRequestParamRequest) (*api_dao.OutgoingRequestParam, error)
+	GetByID(id uint) (*api_dao.OutgoingRequestParam, error)
+	GetAllByConfigID(apiID uint) ([]*api_dao.OutgoingRequestParam, error)
+	Update(id uint, api *OutgoingRequestParamRequest) (*api_dao.OutgoingRequestParam, error)
 	Delete(id uint) error
 }

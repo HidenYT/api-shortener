@@ -1,4 +1,4 @@
-package shortreq
+package api_dao
 
 type IShortenedAPIDAO interface {
 	Create() (*ShortenedAPI, error)

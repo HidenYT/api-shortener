@@ -1,16 +1,16 @@
-package shortreq_test
+package api_dao_test
 
 import (
 	"sort"
 	"testing"
 
-	"github.com/HidenYT/api-shortener/internal/shortreq"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 	"github.com/stretchr/testify/require"
 )
 
-func createRequestHeader(t *testing.T, configID uint) *shortreq.OutgoingRequestHeader {
-	header := &shortreq.OutgoingRequestHeader{
+func createRequestHeader(t *testing.T, configID uint) *api_dao.OutgoingRequestHeader {
+	header := &api_dao.OutgoingRequestHeader{
 		Name:                    "someHeader",
 		Value:                   "someValue",
 		OutgoingRequestConfigID: configID,
@@ -26,7 +26,7 @@ func createRequestHeader(t *testing.T, configID uint) *shortreq.OutgoingRequestH
 	return header
 }
 
-func assertOutgoingRequestHeadersEqual(t *testing.T, expected, actual *shortreq.OutgoingRequestHeader) {
+func assertOutgoingRequestHeadersEqual(t *testing.T, expected, actual *api_dao.OutgoingRequestHeader) {
 	require.Equal(t, expected.ID, actual.ID)
 	require.Equal(t, expected.Name, actual.Name)
 	require.Equal(t, expected.Value, actual.Value)
@@ -50,7 +50,7 @@ func TestGetRequestHeader(t *testing.T) {
 
 func TestGetAllRequestHeadersByConfigID(t *testing.T) {
 	configID := createRequestConfig(t, createShortenedAPI(t).ID).ID
-	headers1 := []*shortreq.OutgoingRequestHeader{
+	headers1 := []*api_dao.OutgoingRequestHeader{
 		createRequestHeader(t, configID),
 		createRequestHeader(t, configID),
 		createRequestHeader(t, configID),

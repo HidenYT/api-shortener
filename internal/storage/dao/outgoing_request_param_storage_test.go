@@ -1,16 +1,16 @@
-package shortreq_test
+package api_dao_test
 
 import (
 	"sort"
 	"testing"
 
-	"github.com/HidenYT/api-shortener/internal/shortreq"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 	"github.com/stretchr/testify/require"
 )
 
-func createRequestParam(t *testing.T, configID uint) *shortreq.OutgoingRequestParam {
-	param := &shortreq.OutgoingRequestParam{
+func createRequestParam(t *testing.T, configID uint) *api_dao.OutgoingRequestParam {
+	param := &api_dao.OutgoingRequestParam{
 		Name:                    "someParam",
 		Value:                   "someValue",
 		OutgoingRequestConfigID: configID,
@@ -26,7 +26,7 @@ func createRequestParam(t *testing.T, configID uint) *shortreq.OutgoingRequestPa
 	return param
 }
 
-func assertOutgoingRequestParamsEqual(t *testing.T, expected, actual *shortreq.OutgoingRequestParam) {
+func assertOutgoingRequestParamsEqual(t *testing.T, expected, actual *api_dao.OutgoingRequestParam) {
 	require.Equal(t, expected.ID, actual.ID)
 	require.Equal(t, expected.Name, actual.Name)
 	require.Equal(t, expected.Value, actual.Value)
@@ -50,7 +50,7 @@ func TestGetRequestParam(t *testing.T) {
 
 func TestGetAllRequestParamsByConfigID(t *testing.T) {
 	configID := createRequestConfig(t, createShortenedAPI(t).ID).ID
-	params1 := []*shortreq.OutgoingRequestParam{
+	params1 := []*api_dao.OutgoingRequestParam{
 		createRequestParam(t, configID),
 		createRequestParam(t, configID),
 		createRequestParam(t, configID),

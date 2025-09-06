@@ -1,4 +1,4 @@
-package shortreq
+package api_dao
 
 import (
 	"github.com/go-playground/validator/v10"

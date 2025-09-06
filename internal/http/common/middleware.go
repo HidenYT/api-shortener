@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/HidenYT/api-shortener/internal/shortreq"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -26,7 +26,7 @@ func APITokenChecker() gin.HandlerFunc {
 	}
 }
 
-func APIIDChecker(apiDAO shortreq.IShortenedAPIDAO) gin.HandlerFunc {
+func APIIDChecker(apiDAO api_dao.IShortenedAPIDAO) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		apiID, err := strconv.ParseUint(c.Param("apiID"), 10, 32)
 		if err != nil {

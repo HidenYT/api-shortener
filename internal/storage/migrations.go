@@ -1,8 +1,7 @@
 package storage
 
 import (
-	"github.com/HidenYT/api-shortener/internal/shortreq"
-
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 	"gorm.io/gorm"
 )
 
@@ -16,11 +15,11 @@ type DBMigrator struct {
 
 func (m *DBMigrator) Migrate() {
 	m.DB.AutoMigrate(
-		&shortreq.ShortenedAPI{},
-		&shortreq.OutgoingRequestConfig{},
-		&shortreq.OutgoingRequestHeader{},
-		&shortreq.OutgoingRequestParam{},
-		&shortreq.ShorteningRule{},
+		&api_dao.ShortenedAPI{},
+		&api_dao.OutgoingRequestConfig{},
+		&api_dao.OutgoingRequestHeader{},
+		&api_dao.OutgoingRequestParam{},
+		&api_dao.ShorteningRule{},
 	)
 }
 

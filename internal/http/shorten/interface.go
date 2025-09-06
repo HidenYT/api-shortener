@@ -2,9 +2,9 @@ package http_shortener
 
 import (
 	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
-	"github.com/HidenYT/api-shortener/internal/shortreq"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 )
 
 type IResponseShorteningService interface {
-	ProcessRequest(api *shortreq.ShortenedAPI) (*shortener.ShortenedResponse, error)
+	ProcessRequest(api *api_dao.ShortenedAPI) (*shortener.ShortenedResponse, error)
 }

@@ -1,16 +1,16 @@
-package shortreq_test
+package api_dao_test
 
 import (
 	"sort"
 	"testing"
 
-	"github.com/HidenYT/api-shortener/internal/shortreq"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 	"github.com/stretchr/testify/require"
 )
 
-func createShorteningRule(t *testing.T, ShortenedAPIID uint) *shortreq.ShorteningRule {
-	rule := &shortreq.ShorteningRule{
+func createShorteningRule(t *testing.T, ShortenedAPIID uint) *api_dao.ShorteningRule {
+	rule := &api_dao.ShorteningRule{
 		FieldName:       "somefield",
 		FieldValueQuery: "query",
 		ShortenedAPIID:  ShortenedAPIID,
@@ -26,7 +26,7 @@ func createShorteningRule(t *testing.T, ShortenedAPIID uint) *shortreq.Shortenin
 	return rule
 }
 
-func assertShorteningRulesEqual(t *testing.T, rule1, rule2 *shortreq.ShorteningRule) {
+func assertShorteningRulesEqual(t *testing.T, rule1, rule2 *api_dao.ShorteningRule) {
 	require.Equal(t, rule1.ID, rule2.ID)
 	require.Equal(t, rule1.FieldName, rule2.FieldName)
 	require.Equal(t, rule1.FieldValueQuery, rule2.FieldValueQuery)
@@ -40,7 +40,7 @@ func TestCreateShorteningRule(t *testing.T) {
 
 func TestCantCreateShorteningRuleWithBadQuery(t *testing.T) {
 	apiID := createShortenedAPI(t).ID
-	rule := &shortreq.ShorteningRule{
+	rule := &api_dao.ShorteningRule{
 		FieldName:       "somefield",
 		FieldValueQuery: "..----....",
 		ShortenedAPIID:  apiID,
@@ -63,7 +63,7 @@ func TestGetShorteningRule(t *testing.T) {
 
 func TestGetAllShorteningRulesByAPIID(t *testing.T) {
 	apiID := createShortenedAPI(t).ID
-	rules1 := []*shortreq.ShorteningRule{createShorteningRule(t, apiID), createShorteningRule(t, apiID)}
+	rules1 := []*api_dao.ShorteningRule{createShorteningRule(t, apiID), createShorteningRule(t, apiID)}
 
 	rules2, err := testShorteningRuleDAO.GetAllByAPIID(apiID)
 

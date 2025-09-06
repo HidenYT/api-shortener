@@ -1,15 +1,15 @@
-package shortreq_test
+package api_dao_test
 
 import (
 	"testing"
 
-	"github.com/HidenYT/api-shortener/internal/shortreq"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 	"github.com/stretchr/testify/require"
 )
 
-func createRequestConfig(t *testing.T, apiID uint) *shortreq.OutgoingRequestConfig {
-	config := &shortreq.OutgoingRequestConfig{
+func createRequestConfig(t *testing.T, apiID uint) *api_dao.OutgoingRequestConfig {
+	config := &api_dao.OutgoingRequestConfig{
 		Url:            "http://someurl.com/",
 		Method:         "POST",
 		Body:           `{"some-key":[1, 2, "3"]}`,
@@ -26,7 +26,7 @@ func createRequestConfig(t *testing.T, apiID uint) *shortreq.OutgoingRequestConf
 	return config
 }
 
-func assertOutgoingRequestConfigsEqual(t *testing.T, expected, actual *shortreq.OutgoingRequestConfig) {
+func assertOutgoingRequestConfigsEqual(t *testing.T, expected, actual *api_dao.OutgoingRequestConfig) {
 	require.Equal(t, expected.ID, actual.ID)
 	require.Equal(t, expected.Method, actual.Method)
 	require.Equal(t, expected.Body, actual.Body)

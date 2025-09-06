@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
-	"github.com/HidenYT/api-shortener/internal/shortreq"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 	"github.com/sirupsen/logrus"
 )
@@ -17,14 +17,14 @@ var (
 )
 
 type ResponseShorteningService struct {
-	configDAO  shortreq.IOutgoingRequestConfigDAO
-	headersDAO shortreq.IOutgoingRequestHeaderDAO
-	paramsDAO  shortreq.IOutgoingRequestParamDAO
+	configDAO  api_dao.IOutgoingRequestConfigDAO
+	headersDAO api_dao.IOutgoingRequestHeaderDAO
+	paramsDAO  api_dao.IOutgoingRequestParamDAO
 	shortener  shortener.IResponseShortener
 	limiter    ILoopLimiter
 }
 
-func (s *ResponseShorteningService) ProcessRequest(api *shortreq.ShortenedAPI) (*shortener.ShortenedResponse, error) {
+func (s *ResponseShorteningService) ProcessRequest(api *api_dao.ShortenedAPI) (*shortener.ShortenedResponse, error) {
 	if !s.limiter.AddNewRequest(api.ID) {
 		logrus.Warningf("Max requests limit exceeded for API %d", api.ID)
 		return nil, errRequestIsAlreadySent
@@ -39,7 +39,7 @@ func (s *ResponseShorteningService) ProcessRequest(api *shortreq.ShortenedAPI) (
 	return s.processRequest(request, api)
 }
 
-func (s *ResponseShorteningService) createOutgoingRequest(api *shortreq.ShortenedAPI) (*http.Request, error) {
+func (s *ResponseShorteningService) createOutgoingRequest(api *api_dao.ShortenedAPI) (*http.Request, error) {
 	requestConfig, err := s.configDAO.GetByAPIID(api.ID)
 	if err != nil {
 		return nil, errWhileCreatingRequestObject
@@ -68,7 +68,7 @@ func (s *ResponseShorteningService) createOutgoingRequest(api *shortreq.Shortene
 	return request, nil
 }
 
-func (s *ResponseShorteningService) processRequest(request *http.Request, api *shortreq.ShortenedAPI) (*shortener.ShortenedResponse, error) {
+func (s *ResponseShorteningService) processRequest(request *http.Request, api *api_dao.ShortenedAPI) (*shortener.ShortenedResponse, error) {
 	result, err := s.shortener.ProcessRequest(request, s.getRules(api))
 	if err != nil {
 		if errors.Is(err, shortener.ErrWhileMakingRequest) {
@@ -85,7 +85,7 @@ func (s *ResponseShorteningService) processRequest(request *http.Request, api *s
 	return result, nil
 }
 
-func (processor *ResponseShorteningService) getRules(api *shortreq.ShortenedAPI) map[string]string {
+func (processor *ResponseShorteningService) getRules(api *api_dao.ShortenedAPI) map[string]string {
 	resultRules := make(map[string]string)
 	for _, rule := range api.ShorteningRules {
 		resultRules[rule.FieldName] = rule.FieldValueQuery
@@ -94,9 +94,9 @@ func (processor *ResponseShorteningService) getRules(api *shortreq.ShortenedAPI)
 }
 
 func NewResponseShorteningService(
-	configDAO shortreq.IOutgoingRequestConfigDAO,
-	headersDAO shortreq.IOutgoingRequestHeaderDAO,
-	paramsDAO shortreq.IOutgoingRequestParamDAO,
+	configDAO api_dao.IOutgoingRequestConfigDAO,
+	headersDAO api_dao.IOutgoingRequestHeaderDAO,
+	paramsDAO api_dao.IOutgoingRequestParamDAO,
 	shortener shortener.IResponseShortener,
 	limiter ILoopLimiter,
 ) *ResponseShorteningService {

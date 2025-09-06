@@ -1,8 +1,6 @@
 package http
 
-import (
-	"github.com/HidenYT/api-shortener/internal/shortreq"
-)
+import api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 type OutgoingRequestConfigRequest struct {
 	Url            string `json:"url" validate:"required,http_url"`
@@ -11,8 +9,8 @@ type OutgoingRequestConfigRequest struct {
 	ShortenedAPIID uint   `json:"shortened_api_id" validate:"required"`
 }
 
-func outgoingRequestConfigRequestToDBModel(request *OutgoingRequestConfigRequest) *shortreq.OutgoingRequestConfig {
-	return &shortreq.OutgoingRequestConfig{
+func outgoingRequestConfigRequestToDBModel(request *OutgoingRequestConfigRequest) *api_dao.OutgoingRequestConfig {
+	return &api_dao.OutgoingRequestConfig{
 		Url:            request.Url,
 		Method:         request.Method,
 		Body:           request.Body,
@@ -26,8 +24,8 @@ type OutgoingRequestHeaderRequest struct {
 	OutgoingRequestConfigID uint   `json:"outgoing_request_config_id" validate:"required"`
 }
 
-func outgoingRequestHeaderRequestToDBModel(request *OutgoingRequestHeaderRequest) *shortreq.OutgoingRequestHeader {
-	return &shortreq.OutgoingRequestHeader{
+func outgoingRequestHeaderRequestToDBModel(request *OutgoingRequestHeaderRequest) *api_dao.OutgoingRequestHeader {
+	return &api_dao.OutgoingRequestHeader{
 		Name:                    request.Name,
 		Value:                   request.Value,
 		OutgoingRequestConfigID: request.OutgoingRequestConfigID,
@@ -40,8 +38,8 @@ type OutgoingRequestParamRequest struct {
 	OutgoingRequestConfigID uint   `json:"outgoing_request_config_id" validate:"required"`
 }
 
-func outgoingRequestParamRequestToDBModel(request *OutgoingRequestParamRequest) *shortreq.OutgoingRequestParam {
-	return &shortreq.OutgoingRequestParam{
+func outgoingRequestParamRequestToDBModel(request *OutgoingRequestParamRequest) *api_dao.OutgoingRequestParam {
+	return &api_dao.OutgoingRequestParam{
 		Name:                    request.Name,
 		Value:                   request.Value,
 		OutgoingRequestConfigID: request.OutgoingRequestConfigID,
@@ -54,8 +52,8 @@ type ShorteningRuleRequest struct {
 	ShortenedAPIID  uint   `json:"shortened_api_id" validate:"required"`
 }
 
-func shorteningRuleRequestToDBModel(request *ShorteningRuleRequest) *shortreq.ShorteningRule {
-	return &shortreq.ShorteningRule{
+func shorteningRuleRequestToDBModel(request *ShorteningRuleRequest) *api_dao.ShorteningRule {
+	return &api_dao.ShorteningRule{
 		FieldName:       request.FieldName,
 		FieldValueQuery: request.FieldValueQuery,
 		ShortenedAPIID:  request.ShortenedAPIID,

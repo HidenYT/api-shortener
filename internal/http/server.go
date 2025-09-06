@@ -5,13 +5,13 @@ import (
 	crudapi_v1 "github.com/HidenYT/api-shortener/internal/http/crudapi/v1"
 	crudapi_v2 "github.com/HidenYT/api-shortener/internal/http/crudapi/v2"
 	http_shortener "github.com/HidenYT/api-shortener/internal/http/shorten"
-	"github.com/HidenYT/api-shortener/internal/shortreq"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 	"github.com/gin-gonic/gin"
 )
 
 func NewHTTPServer(
-	apiDAO shortreq.IShortenedAPIDAO,
+	apiDAO api_dao.IShortenedAPIDAO,
 	shorteningService http_shortener.IResponseShorteningService,
 	apiService crudapi_v1.IAPIService,
 	configService crudapi_v1.IRequestConfigService,

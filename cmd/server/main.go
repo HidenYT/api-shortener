@@ -6,8 +6,9 @@ import (
 	crudapi_v2 "github.com/HidenYT/api-shortener/internal/http/crudapi/v2"
 	http_shortener "github.com/HidenYT/api-shortener/internal/http/shorten"
 	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
-	"github.com/HidenYT/api-shortener/internal/shortreq"
 	"github.com/HidenYT/api-shortener/internal/storage"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	"github.com/HidenYT/api-shortener/internal/validation"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -16,16 +17,16 @@ import (
 func main() {
 	loadEnv()
 
-	validator := shortreq.NewValidate()
+	validator := validation.NewValidate()
 
 	dbSettings := storage.NewDBConnectionSettings()
 	db := storage.NewDB(dbSettings)
 
-	apiDAO := shortreq.NewShortenedAPIDAO(db, validator)
-	configDAO := shortreq.NewOutgoingRequestConfigDAO(db, validator)
-	headerDAO := shortreq.NewOutgoingRequestHeaderDAO(db, validator)
-	paramDAO := shortreq.NewOutgoingRequestParamDAO(db, validator)
-	ruleDAO := shortreq.NewShorteningRuleDAO(db, validator)
+	apiDAO := api_dao.NewShortenedAPIDAO(db, validator)
+	configDAO := api_dao.NewOutgoingRequestConfigDAO(db, validator)
+	headerDAO := api_dao.NewOutgoingRequestHeaderDAO(db, validator)
+	paramDAO := api_dao.NewOutgoingRequestParamDAO(db, validator)
+	ruleDAO := api_dao.NewShorteningRuleDAO(db, validator)
 
 	apiService := crudapi_v1.NewAPIService(apiDAO)
 	configService := crudapi_v1.NewRequestConfigService(configDAO)
