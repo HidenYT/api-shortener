@@ -7,12 +7,13 @@ import (
 	http_common "github.com/HidenYT/api-shortener/internal/http/common"
 	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
 	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	db_model "github.com/HidenYT/api-shortener/internal/storage/db-model/api"
 	"github.com/gin-gonic/gin"
 )
 
 func shorteningView(c *gin.Context, shorteningService IResponseShorteningService) {
 	api := c.MustGet(http_common.CTX_API_KEY)
-	response, err := shorteningService.ProcessRequest(api.(*api_dao.ShortenedAPI))
+	response, err := shorteningService.ProcessRequest(api.(*db_model.ShortenedAPI))
 	if err != nil {
 		var status int
 		if errors.Is(err, errRequestIsAlreadySent) {

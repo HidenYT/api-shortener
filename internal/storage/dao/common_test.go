@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	"github.com/HidenYT/api-shortener/internal/storage/migration"
 	"github.com/HidenYT/api-shortener/internal/validation"
 
 	"github.com/HidenYT/api-shortener/internal/storage"
@@ -21,7 +22,7 @@ var testOutgoingRequestParamDAO *api_dao.OutgoingRequestParamDAO
 var testOutgoingRequestConfigDAO *api_dao.OutgoingRequestConfigDAO
 
 func TestMain(m *testing.M) {
-	err := godotenv.Load("../.env.test")
+	err := godotenv.Load("../../../.env.test")
 	if err != nil {
 		logrus.Fatal("cannot load .env.test file:", err)
 	}
@@ -33,7 +34,7 @@ func TestMain(m *testing.M) {
 	}
 
 	db := storage.NewDB(&settings)
-	migrator := api_dao.NewMigrator(db)
+	migrator := migration.NewMigrator(db)
 	migrator.Migrate()
 	validator := validation.NewValidate()
 	testShortenedAPIDAO = api_dao.NewShortenedAPIDAO(db, validator)

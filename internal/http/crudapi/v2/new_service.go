@@ -2,6 +2,7 @@ package http
 
 import (
 	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	db_model "github.com/HidenYT/api-shortener/internal/storage/db-model/api"
 )
 
 type IAPIDTOService interface {
@@ -21,8 +22,8 @@ type APIDTOService struct {
 
 func (s APIDTOService) createOutgoingRequestConfig(
 	apiID uint, dto *OutgoingRequestConfigDTO,
-) (*api_dao.OutgoingRequestConfig, error) {
-	requestConfigDBModel := &api_dao.OutgoingRequestConfig{
+) (*db_model.OutgoingRequestConfig, error) {
+	requestConfigDBModel := &db_model.OutgoingRequestConfig{
 		Url:            dto.Url,
 		Method:         dto.Method,
 		Body:           dto.Body,
@@ -34,7 +35,7 @@ func (s APIDTOService) createOutgoingRequestConfig(
 
 func (s APIDTOService) createRules(dto *ShortenedAPIDTO) error {
 	for _, rule := range dto.ShorteningRules {
-		ruleDBModel := &api_dao.ShorteningRule{
+		ruleDBModel := &db_model.ShorteningRule{
 			FieldName:       rule.FieldName,
 			FieldValueQuery: rule.FieldValueQuery,
 			ShortenedAPIID:  dto.ID,
@@ -49,7 +50,7 @@ func (s APIDTOService) createRules(dto *ShortenedAPIDTO) error {
 
 func (s APIDTOService) createHeaders(dto *OutgoingRequestConfigDTO) error {
 	for _, header := range dto.Headers {
-		headerDBModel := &api_dao.OutgoingRequestHeader{
+		headerDBModel := &db_model.OutgoingRequestHeader{
 			Name:                    header.Name,
 			Value:                   header.Value,
 			OutgoingRequestConfigID: dto.ID,
@@ -64,7 +65,7 @@ func (s APIDTOService) createHeaders(dto *OutgoingRequestConfigDTO) error {
 
 func (s APIDTOService) createParams(dto *OutgoingRequestConfigDTO) error {
 	for _, param := range dto.Params {
-		paramDBModel := &api_dao.OutgoingRequestParam{
+		paramDBModel := &db_model.OutgoingRequestParam{
 			Name:                    param.Name,
 			Value:                   param.Value,
 			OutgoingRequestConfigID: dto.ID,
@@ -203,7 +204,7 @@ func splitToCreateUpdateDeleteNamedEntities[T interface {
 	return create, update, delete
 }
 
-func (s APIDTOService) updateRequestConfig(dto *OutgoingRequestConfigDTO, dbModel *api_dao.OutgoingRequestConfig) error {
+func (s APIDTOService) updateRequestConfig(dto *OutgoingRequestConfigDTO, dbModel *db_model.OutgoingRequestConfig) error {
 	dto.ID = dbModel.ID
 	dbModel.Body = dto.Body
 	dbModel.Url = dto.Url
@@ -216,9 +217,9 @@ func (s APIDTOService) makeUpdatedRules(apiID uint, gotRules []*ShorteningRuleDT
 	if err != nil {
 		return []*ShorteningRuleDTO{}, err
 	}
-	gotDBRules := make([]*api_dao.ShorteningRule, len(gotRules))
+	gotDBRules := make([]*db_model.ShorteningRule, len(gotRules))
 	for i, r := range gotRules {
-		dbRule := api_dao.ShorteningRule{
+		dbRule := db_model.ShorteningRule{
 			FieldName:       r.FieldName,
 			FieldValueQuery: r.FieldValueQuery,
 			ShortenedAPIID:  apiID,
@@ -252,9 +253,9 @@ func (s APIDTOService) makeUpdatedHeaders(configID uint, gotHeaders []*OutgoingR
 	if err != nil {
 		return []*OutgoingRequestHeaderDTO{}, err
 	}
-	gotDBHeaders := make([]*api_dao.OutgoingRequestHeader, len(gotHeaders))
+	gotDBHeaders := make([]*db_model.OutgoingRequestHeader, len(gotHeaders))
 	for i, r := range gotHeaders {
-		dbHeader := api_dao.OutgoingRequestHeader{
+		dbHeader := db_model.OutgoingRequestHeader{
 			Name:                    r.Name,
 			Value:                   r.Value,
 			OutgoingRequestConfigID: configID,
@@ -288,9 +289,9 @@ func (s APIDTOService) makeUpdatedParams(configID uint, gotParams []*OutgoingReq
 	if err != nil {
 		return []*OutgoingRequestParamDTO{}, err
 	}
-	gotDBParams := make([]*api_dao.OutgoingRequestParam, len(gotParams))
+	gotDBParams := make([]*db_model.OutgoingRequestParam, len(gotParams))
 	for i, r := range gotParams {
-		dbParam := api_dao.OutgoingRequestParam{
+		dbParam := db_model.OutgoingRequestParam{
 			Name:                    r.Name,
 			Value:                   r.Value,
 			OutgoingRequestConfigID: configID,

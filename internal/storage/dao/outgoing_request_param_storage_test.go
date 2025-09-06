@@ -4,13 +4,12 @@ import (
 	"sort"
 	"testing"
 
-	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
-
+	db_model "github.com/HidenYT/api-shortener/internal/storage/db-model/api"
 	"github.com/stretchr/testify/require"
 )
 
-func createRequestParam(t *testing.T, configID uint) *api_dao.OutgoingRequestParam {
-	param := &api_dao.OutgoingRequestParam{
+func createRequestParam(t *testing.T, configID uint) *db_model.OutgoingRequestParam {
+	param := &db_model.OutgoingRequestParam{
 		Name:                    "someParam",
 		Value:                   "someValue",
 		OutgoingRequestConfigID: configID,
@@ -26,7 +25,7 @@ func createRequestParam(t *testing.T, configID uint) *api_dao.OutgoingRequestPar
 	return param
 }
 
-func assertOutgoingRequestParamsEqual(t *testing.T, expected, actual *api_dao.OutgoingRequestParam) {
+func assertOutgoingRequestParamsEqual(t *testing.T, expected, actual *db_model.OutgoingRequestParam) {
 	require.Equal(t, expected.ID, actual.ID)
 	require.Equal(t, expected.Name, actual.Name)
 	require.Equal(t, expected.Value, actual.Value)
@@ -50,7 +49,7 @@ func TestGetRequestParam(t *testing.T) {
 
 func TestGetAllRequestParamsByConfigID(t *testing.T) {
 	configID := createRequestConfig(t, createShortenedAPI(t).ID).ID
-	params1 := []*api_dao.OutgoingRequestParam{
+	params1 := []*db_model.OutgoingRequestParam{
 		createRequestParam(t, configID),
 		createRequestParam(t, configID),
 		createRequestParam(t, configID),

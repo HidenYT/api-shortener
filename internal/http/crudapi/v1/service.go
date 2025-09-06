@@ -1,6 +1,9 @@
 package http
 
-import api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+import (
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	db_model "github.com/HidenYT/api-shortener/internal/storage/db-model/api"
+)
 
 // API
 
@@ -12,11 +15,11 @@ func NewAPIService(apiDAO api_dao.IShortenedAPIDAO) *APIService {
 	return &APIService{apiDAO: apiDAO}
 }
 
-func (s *APIService) Create() (*api_dao.ShortenedAPI, error) {
+func (s *APIService) Create() (*db_model.ShortenedAPI, error) {
 	return s.apiDAO.Create()
 }
 
-func (s *APIService) GetByID(id uint) (*api_dao.ShortenedAPI, error) {
+func (s *APIService) GetByID(id uint) (*db_model.ShortenedAPI, error) {
 	return s.apiDAO.Get(id)
 }
 
@@ -34,21 +37,21 @@ func NewRequestConfigService(configDAO api_dao.IOutgoingRequestConfigDAO) *Reque
 	return &RequestConfigService{requestConfigDAO: configDAO}
 }
 
-func (s *RequestConfigService) Create(configRequest *OutgoingRequestConfigRequest) (*api_dao.OutgoingRequestConfig, error) {
+func (s *RequestConfigService) Create(configRequest *OutgoingRequestConfigRequest) (*db_model.OutgoingRequestConfig, error) {
 	config := outgoingRequestConfigRequestToDBModel(configRequest)
 	err := s.requestConfigDAO.Create(config)
 	return config, err
 }
 
-func (s *RequestConfigService) GetByID(id uint) (*api_dao.OutgoingRequestConfig, error) {
+func (s *RequestConfigService) GetByID(id uint) (*db_model.OutgoingRequestConfig, error) {
 	return s.requestConfigDAO.Get(id)
 }
 
-func (s *RequestConfigService) GetByAPIID(id uint) (*api_dao.OutgoingRequestConfig, error) {
+func (s *RequestConfigService) GetByAPIID(id uint) (*db_model.OutgoingRequestConfig, error) {
 	return s.requestConfigDAO.GetByAPIID(id)
 }
 
-func (s *RequestConfigService) Update(id uint, configRequest *OutgoingRequestConfigRequest) (*api_dao.OutgoingRequestConfig, error) {
+func (s *RequestConfigService) Update(id uint, configRequest *OutgoingRequestConfigRequest) (*db_model.OutgoingRequestConfig, error) {
 	config := outgoingRequestConfigRequestToDBModel(configRequest)
 	config.ID = id
 	err := s.requestConfigDAO.Update(config)
@@ -69,21 +72,21 @@ func NewShorteningRuleService(ruleDAO api_dao.IShorteningRuleDAO) *ShorteningRul
 	return &ShorteningRuleService{ruleDAO: ruleDAO}
 }
 
-func (s *ShorteningRuleService) Create(ruleRequest *ShorteningRuleRequest) (*api_dao.ShorteningRule, error) {
+func (s *ShorteningRuleService) Create(ruleRequest *ShorteningRuleRequest) (*db_model.ShorteningRule, error) {
 	rule := shorteningRuleRequestToDBModel(ruleRequest)
 	err := s.ruleDAO.Create(rule)
 	return rule, err
 }
 
-func (s *ShorteningRuleService) GetByID(id uint) (*api_dao.ShorteningRule, error) {
+func (s *ShorteningRuleService) GetByID(id uint) (*db_model.ShorteningRule, error) {
 	return s.ruleDAO.Get(id)
 }
 
-func (s *ShorteningRuleService) GetAllByAPIID(id uint) ([]*api_dao.ShorteningRule, error) {
+func (s *ShorteningRuleService) GetAllByAPIID(id uint) ([]*db_model.ShorteningRule, error) {
 	return s.ruleDAO.GetAllByAPIID(id)
 }
 
-func (s *ShorteningRuleService) Update(id uint, ruleRequest *ShorteningRuleRequest) (*api_dao.ShorteningRule, error) {
+func (s *ShorteningRuleService) Update(id uint, ruleRequest *ShorteningRuleRequest) (*db_model.ShorteningRule, error) {
 	rule := shorteningRuleRequestToDBModel(ruleRequest)
 	rule.ID = id
 	err := s.ruleDAO.Update(rule)
@@ -104,21 +107,21 @@ func NewRequestHeaderService(headerDAO api_dao.IOutgoingRequestHeaderDAO) *Reque
 	return &RequestHeaderService{requestHeaderDAO: headerDAO}
 }
 
-func (s *RequestHeaderService) Create(headerRequest *OutgoingRequestHeaderRequest) (*api_dao.OutgoingRequestHeader, error) {
+func (s *RequestHeaderService) Create(headerRequest *OutgoingRequestHeaderRequest) (*db_model.OutgoingRequestHeader, error) {
 	header := outgoingRequestHeaderRequestToDBModel(headerRequest)
 	err := s.requestHeaderDAO.Create(header)
 	return header, err
 }
 
-func (s *RequestHeaderService) GetByID(id uint) (*api_dao.OutgoingRequestHeader, error) {
+func (s *RequestHeaderService) GetByID(id uint) (*db_model.OutgoingRequestHeader, error) {
 	return s.requestHeaderDAO.Get(id)
 }
 
-func (s *RequestHeaderService) GetAllByConfigID(id uint) ([]*api_dao.OutgoingRequestHeader, error) {
+func (s *RequestHeaderService) GetAllByConfigID(id uint) ([]*db_model.OutgoingRequestHeader, error) {
 	return s.requestHeaderDAO.GetAllByConfigID(id)
 }
 
-func (s *RequestHeaderService) Update(id uint, headerRequest *OutgoingRequestHeaderRequest) (*api_dao.OutgoingRequestHeader, error) {
+func (s *RequestHeaderService) Update(id uint, headerRequest *OutgoingRequestHeaderRequest) (*db_model.OutgoingRequestHeader, error) {
 	header := outgoingRequestHeaderRequestToDBModel(headerRequest)
 	header.ID = id
 	err := s.requestHeaderDAO.Update(header)
@@ -139,21 +142,21 @@ func NewRequestParamService(paramDAO api_dao.IOutgoingRequestParamDAO) *RequestP
 	return &RequestParamService{requestParamDAO: paramDAO}
 }
 
-func (s *RequestParamService) Create(paramRequest *OutgoingRequestParamRequest) (*api_dao.OutgoingRequestParam, error) {
+func (s *RequestParamService) Create(paramRequest *OutgoingRequestParamRequest) (*db_model.OutgoingRequestParam, error) {
 	param := outgoingRequestParamRequestToDBModel(paramRequest)
 	err := s.requestParamDAO.Create(param)
 	return param, err
 }
 
-func (s *RequestParamService) GetByID(id uint) (*api_dao.OutgoingRequestParam, error) {
+func (s *RequestParamService) GetByID(id uint) (*db_model.OutgoingRequestParam, error) {
 	return s.requestParamDAO.Get(id)
 }
 
-func (s *RequestParamService) GetAllByConfigID(id uint) ([]*api_dao.OutgoingRequestParam, error) {
+func (s *RequestParamService) GetAllByConfigID(id uint) ([]*db_model.OutgoingRequestParam, error) {
 	return s.requestParamDAO.GetAllByConfigID(id)
 }
 
-func (s *RequestParamService) Update(id uint, paramRequest *OutgoingRequestParamRequest) (*api_dao.OutgoingRequestParam, error) {
+func (s *RequestParamService) Update(id uint, paramRequest *OutgoingRequestParamRequest) (*db_model.OutgoingRequestParam, error) {
 	param := outgoingRequestParamRequestToDBModel(paramRequest)
 	param.ID = id
 	err := s.requestParamDAO.Update(param)

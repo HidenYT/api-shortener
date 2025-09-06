@@ -1,4 +1,4 @@
-package api_dao
+package db_model
 
 import (
 	"gorm.io/gorm"

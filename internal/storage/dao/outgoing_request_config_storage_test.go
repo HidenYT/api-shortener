@@ -3,13 +3,12 @@ package api_dao_test
 import (
 	"testing"
 
-	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
-
+	db_model "github.com/HidenYT/api-shortener/internal/storage/db-model/api"
 	"github.com/stretchr/testify/require"
 )
 
-func createRequestConfig(t *testing.T, apiID uint) *api_dao.OutgoingRequestConfig {
-	config := &api_dao.OutgoingRequestConfig{
+func createRequestConfig(t *testing.T, apiID uint) *db_model.OutgoingRequestConfig {
+	config := &db_model.OutgoingRequestConfig{
 		Url:            "http://someurl.com/",
 		Method:         "POST",
 		Body:           `{"some-key":[1, 2, "3"]}`,
@@ -26,7 +25,7 @@ func createRequestConfig(t *testing.T, apiID uint) *api_dao.OutgoingRequestConfi
 	return config
 }
 
-func assertOutgoingRequestConfigsEqual(t *testing.T, expected, actual *api_dao.OutgoingRequestConfig) {
+func assertOutgoingRequestConfigsEqual(t *testing.T, expected, actual *db_model.OutgoingRequestConfig) {
 	require.Equal(t, expected.ID, actual.ID)
 	require.Equal(t, expected.Method, actual.Method)
 	require.Equal(t, expected.Body, actual.Body)

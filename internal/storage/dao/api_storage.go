@@ -1,6 +1,7 @@
 package api_dao
 
 import (
+	db_model "github.com/HidenYT/api-shortener/internal/storage/db-model/api"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
@@ -10,13 +11,13 @@ type ShortenedAPIDAO struct {
 	validate *validator.Validate
 }
 
-func (dao *ShortenedAPIDAO) Create() (*ShortenedAPI, error) {
-	api := &ShortenedAPI{}
+func (dao *ShortenedAPIDAO) Create() (*db_model.ShortenedAPI, error) {
+	api := &db_model.ShortenedAPI{}
 	return api, dao.db.Create(api).Error
 }
 
-func (dao *ShortenedAPIDAO) Get(id uint) (*ShortenedAPI, error) {
-	result := &ShortenedAPI{}
+func (dao *ShortenedAPIDAO) Get(id uint) (*db_model.ShortenedAPI, error) {
+	result := &db_model.ShortenedAPI{}
 	takeResult := dao.db.Where("ID = ?", id).Preload("ShorteningRules").Take(result)
 	return result, takeResult.Error
 }

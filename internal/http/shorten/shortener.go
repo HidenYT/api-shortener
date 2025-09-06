@@ -7,6 +7,7 @@ import (
 
 	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
 	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	db_model "github.com/HidenYT/api-shortener/internal/storage/db-model/api"
 
 	"github.com/sirupsen/logrus"
 )
@@ -24,7 +25,7 @@ type ResponseShorteningService struct {
 	limiter    ILoopLimiter
 }
 
-func (s *ResponseShorteningService) ProcessRequest(api *api_dao.ShortenedAPI) (*shortener.ShortenedResponse, error) {
+func (s *ResponseShorteningService) ProcessRequest(api *db_model.ShortenedAPI) (*shortener.ShortenedResponse, error) {
 	if !s.limiter.AddNewRequest(api.ID) {
 		logrus.Warningf("Max requests limit exceeded for API %d", api.ID)
 		return nil, errRequestIsAlreadySent
@@ -39,7 +40,7 @@ func (s *ResponseShorteningService) ProcessRequest(api *api_dao.ShortenedAPI) (*
 	return s.processRequest(request, api)
 }
 
-func (s *ResponseShorteningService) createOutgoingRequest(api *api_dao.ShortenedAPI) (*http.Request, error) {
+func (s *ResponseShorteningService) createOutgoingRequest(api *db_model.ShortenedAPI) (*http.Request, error) {
 	requestConfig, err := s.configDAO.GetByAPIID(api.ID)
 	if err != nil {
 		return nil, errWhileCreatingRequestObject
@@ -68,7 +69,7 @@ func (s *ResponseShorteningService) createOutgoingRequest(api *api_dao.Shortened
 	return request, nil
 }
 
-func (s *ResponseShorteningService) processRequest(request *http.Request, api *api_dao.ShortenedAPI) (*shortener.ShortenedResponse, error) {
+func (s *ResponseShorteningService) processRequest(request *http.Request, api *db_model.ShortenedAPI) (*shortener.ShortenedResponse, error) {
 	result, err := s.shortener.ProcessRequest(request, s.getRules(api))
 	if err != nil {
 		if errors.Is(err, shortener.ErrWhileMakingRequest) {
@@ -85,7 +86,7 @@ func (s *ResponseShorteningService) processRequest(request *http.Request, api *a
 	return result, nil
 }
 
-func (processor *ResponseShorteningService) getRules(api *api_dao.ShortenedAPI) map[string]string {
+func (processor *ResponseShorteningService) getRules(api *db_model.ShortenedAPI) map[string]string {
 	resultRules := make(map[string]string)
 	for _, rule := range api.ShorteningRules {
 		resultRules[rule.FieldName] = rule.FieldValueQuery
