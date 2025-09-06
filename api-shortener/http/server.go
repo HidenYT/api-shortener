@@ -1,6 +1,9 @@
 package http
 
 import (
+	http_common "api-shortener/http/common"
+	crudapi_v1 "api-shortener/http/crudapi/v1"
+	crudapi_v2 "api-shortener/http/crudapi/v2"
 	"api-shortener/shortreq"
 
 	"github.com/gin-gonic/gin"
@@ -8,18 +11,18 @@ import (
 
 func NewHTTPServer(
 	apiDAO shortreq.IShortenedAPIDAO,
-	shorteningService IResponseShorteningService,
-	apiService IAPIService,
-	configService IRequestConfigService,
-	headerService IRequestHeaderService,
-	paramService IRequestParamService,
-	rulesService IShorteningRuleService,
-	apiDTOService IAPIDTOService,
+	shorteningService crudapi_v1.IResponseShorteningService,
+	apiService crudapi_v1.IAPIService,
+	configService crudapi_v1.IRequestConfigService,
+	headerService crudapi_v1.IRequestHeaderService,
+	paramService crudapi_v1.IRequestParamService,
+	rulesService crudapi_v1.IShorteningRuleService,
+	apiDTOService crudapi_v2.IAPIDTOService,
 ) *gin.Engine {
 	ginServer := gin.Default()
-	ginServer.Use(apiTokenChecker())
-	attachAPIShorteningGroup(ginServer, shorteningService, apiDAO)
-	attachRESTAPIGroup(ginServer, apiService, configService, headerService, paramService, rulesService)
-	attachHandlerGroupV2(ginServer, apiDTOService)
+	ginServer.Use(http_common.APITokenChecker())
+	crudapi_v1.AttachAPIShorteningGroup(ginServer, shorteningService, apiDAO)
+	crudapi_v1.AttachRESTAPIGroup(ginServer, apiService, configService, headerService, paramService, rulesService)
+	crudapi_v2.AttachHandlerGroupV2(ginServer, apiDTOService)
 	return ginServer
 }

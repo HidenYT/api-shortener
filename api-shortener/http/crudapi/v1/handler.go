@@ -1,17 +1,16 @@
 package http
 
 import (
+	http_common "api-shortener/http/common"
 	shortener "api-shortener/response-shortener"
 	"api-shortener/shortreq"
 	"errors"
-	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func attachRESTAPIGroup(
+func AttachRESTAPIGroup(
 	r *gin.Engine,
 	apiService IAPIService,
 	configService IRequestConfigService,
@@ -98,22 +97,6 @@ func attachRESTAPIGroup(
 	})
 }
 
-func getUintFromPath(name string, c *gin.Context) (uint, error) {
-	uintRaw, err := strconv.ParseUint(c.Param(name), 10, 32)
-	if err != nil {
-		return 0, fmt.Errorf("unable to parse %s from path", name)
-	}
-	return uint(uintRaw), nil
-}
-
-func getUintFromQuery(name string, c *gin.Context) (uint, error) {
-	apiIdRaw, err := strconv.ParseUint(c.Query(name), 10, 32)
-	if err != nil {
-		return 0, fmt.Errorf("unable to parse %s from query", name)
-	}
-	return uint(apiIdRaw), nil
-}
-
 // API
 
 func createShortenedAPI(c *gin.Context, apiService IAPIService) {
@@ -126,7 +109,7 @@ func createShortenedAPI(c *gin.Context, apiService IAPIService) {
 }
 
 func deleteShortenedAPI(c *gin.Context, apiService IAPIService) {
-	apiId, err := getUintFromPath("id", c)
+	apiId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -156,7 +139,7 @@ func createOutgoingRequestConfig(c *gin.Context, configService IRequestConfigSer
 }
 
 func getOutgoingRequestConfig(c *gin.Context, configService IRequestConfigService) {
-	configId, err := getUintFromPath("id", c)
+	configId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -170,7 +153,7 @@ func getOutgoingRequestConfig(c *gin.Context, configService IRequestConfigServic
 }
 
 func getOutgoingRequestConfigByAPIID(c *gin.Context, configService IRequestConfigService) {
-	apiId, err := getUintFromQuery("apiID", c)
+	apiId, err := http_common.GetUintFromQuery("apiID", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -184,7 +167,7 @@ func getOutgoingRequestConfigByAPIID(c *gin.Context, configService IRequestConfi
 }
 
 func updateOutgoingRequestConfig(c *gin.Context, configService IRequestConfigService) {
-	configId, err := getUintFromPath("id", c)
+	configId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -203,7 +186,7 @@ func updateOutgoingRequestConfig(c *gin.Context, configService IRequestConfigSer
 }
 
 func deleteOutgoingRequestConfig(c *gin.Context, configService IRequestConfigService) {
-	configId, err := getUintFromPath("id", c)
+	configId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -234,7 +217,7 @@ func createShorteningRule(c *gin.Context, rulesService IShorteningRuleService) {
 }
 
 func getShorteningRule(c *gin.Context, rulesService IShorteningRuleService) {
-	ruleId, err := getUintFromPath("id", c)
+	ruleId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -248,7 +231,7 @@ func getShorteningRule(c *gin.Context, rulesService IShorteningRuleService) {
 }
 
 func getAllShorteningRulesByAPIID(c *gin.Context, rulesService IShorteningRuleService) {
-	apiId, err := getUintFromQuery("apiID", c)
+	apiId, err := http_common.GetUintFromQuery("apiID", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -262,7 +245,7 @@ func getAllShorteningRulesByAPIID(c *gin.Context, rulesService IShorteningRuleSe
 }
 
 func updateShorteningRule(c *gin.Context, rulesService IShorteningRuleService) {
-	ruleId, err := getUintFromPath("id", c)
+	ruleId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -281,7 +264,7 @@ func updateShorteningRule(c *gin.Context, rulesService IShorteningRuleService) {
 }
 
 func deleteShorteningRule(c *gin.Context, rulesService IShorteningRuleService) {
-	ruleId, err := getUintFromPath("id", c)
+	ruleId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -312,7 +295,7 @@ func createOutgoingRequestHeader(c *gin.Context, headerService IRequestHeaderSer
 }
 
 func getOutgoingRequestHeader(c *gin.Context, headerService IRequestHeaderService) {
-	headerId, err := getUintFromPath("id", c)
+	headerId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -326,7 +309,7 @@ func getOutgoingRequestHeader(c *gin.Context, headerService IRequestHeaderServic
 }
 
 func getAllOutgoingRequestHeadersByConfigID(c *gin.Context, headerService IRequestHeaderService) {
-	configId, err := getUintFromQuery("configID", c)
+	configId, err := http_common.GetUintFromQuery("configID", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -340,7 +323,7 @@ func getAllOutgoingRequestHeadersByConfigID(c *gin.Context, headerService IReque
 }
 
 func updateOutgoingRequestHeader(c *gin.Context, headerService IRequestHeaderService) {
-	headerId, err := getUintFromPath("id", c)
+	headerId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -359,7 +342,7 @@ func updateOutgoingRequestHeader(c *gin.Context, headerService IRequestHeaderSer
 }
 
 func deleteOutgoingRequestHeader(c *gin.Context, headerService IRequestHeaderService) {
-	headerId, err := getUintFromPath("id", c)
+	headerId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -390,7 +373,7 @@ func createOutgoingRequestParam(c *gin.Context, paramService IRequestParamServic
 }
 
 func getOutgoingRequestParam(c *gin.Context, paramService IRequestParamService) {
-	paramId, err := getUintFromPath("id", c)
+	paramId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -404,7 +387,7 @@ func getOutgoingRequestParam(c *gin.Context, paramService IRequestParamService) 
 }
 
 func getAllOutgoingRequestParamsByConfigID(c *gin.Context, paramService IRequestParamService) {
-	configId, err := getUintFromQuery("configID", c)
+	configId, err := http_common.GetUintFromQuery("configID", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -418,7 +401,7 @@ func getAllOutgoingRequestParamsByConfigID(c *gin.Context, paramService IRequest
 }
 
 func updateOutgoingRequestParam(c *gin.Context, paramService IRequestParamService) {
-	paramId, err := getUintFromPath("id", c)
+	paramId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -437,7 +420,7 @@ func updateOutgoingRequestParam(c *gin.Context, paramService IRequestParamServic
 }
 
 func deleteOutgoingRequestParam(c *gin.Context, paramService IRequestParamService) {
-	paramId, err := getUintFromPath("id", c)
+	paramId, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -451,7 +434,7 @@ func deleteOutgoingRequestParam(c *gin.Context, paramService IRequestParamServic
 }
 
 func shorteningView(c *gin.Context, shorteningService IResponseShorteningService) {
-	api := c.MustGet(CTX_API_KEY)
+	api := c.MustGet(http_common.CTX_API_KEY)
 	response, err := shorteningService.ProcessRequest(api.(*shortreq.ShortenedAPI))
 	if err != nil {
 		var status int
@@ -471,10 +454,10 @@ func shorteningView(c *gin.Context, shorteningService IResponseShorteningService
 	c.JSON(response.StatusCode, shortenedAPIResponseFromResponse(response))
 }
 
-func attachAPIShorteningGroup(r *gin.Engine, shorteningService IResponseShorteningService, apiDAO shortreq.IShortenedAPIDAO) {
+func AttachAPIShorteningGroup(r *gin.Engine, shorteningService IResponseShorteningService, apiDAO shortreq.IShortenedAPIDAO) {
 	apiGroup := r.Group("/api")
 
-	apiGroup.Use(apiIDChecker(apiDAO))
+	apiGroup.Use(http_common.APIIDChecker(apiDAO))
 	apiGroup.Any("/:apiID", func(c *gin.Context) {
 		shorteningView(c, shorteningService)
 	})

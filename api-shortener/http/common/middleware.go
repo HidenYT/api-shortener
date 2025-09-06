@@ -2,7 +2,6 @@ package http
 
 import (
 	"api-shortener/shortreq"
-	"errors"
 	"net/http"
 	"os"
 	"strconv"
@@ -11,19 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	CTX_API_KEY              = "api"
-	API_AUTH_TOKEN_QUERY_KEY = "token"
-	API_AUTH_TOKEN_ENV_KEY   = "API_KEY"
-)
-
-var (
-	errUnathorized                = errors.New("Unauthorized")
-	errAPIIDNotFoundInRequestPath = errors.New("API ID not found in request path")
-	errAPIIDNotFound              = errors.New("API ID not found")
-)
-
-func apiTokenChecker() gin.HandlerFunc {
+func APITokenChecker() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		passedToken := c.Query(API_AUTH_TOKEN_QUERY_KEY)
 		realToken, ok := os.LookupEnv(API_AUTH_TOKEN_ENV_KEY)
@@ -38,7 +25,7 @@ func apiTokenChecker() gin.HandlerFunc {
 	}
 }
 
-func apiIDChecker(apiDAO shortreq.IShortenedAPIDAO) gin.HandlerFunc {
+func APIIDChecker(apiDAO shortreq.IShortenedAPIDAO) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		apiID, err := strconv.ParseUint(c.Param("apiID"), 10, 32)
 		if err != nil {

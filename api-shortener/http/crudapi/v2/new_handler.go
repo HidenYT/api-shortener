@@ -1,13 +1,14 @@
 package http
 
 import (
+	http_common "api-shortener/http/common"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
-func attachHandlerGroupV2(
+func AttachHandlerGroupV2(
 	r *gin.Engine,
 	service IAPIDTOService,
 ) {
@@ -41,7 +42,7 @@ func createAPIHandle(c *gin.Context, service IAPIDTOService) {
 }
 
 func getAPIHandle(c *gin.Context, service IAPIDTOService) {
-	apiID, err := getUintFromPath("id", c)
+	apiID, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -55,7 +56,7 @@ func getAPIHandle(c *gin.Context, service IAPIDTOService) {
 }
 
 func updateAPIHandle(c *gin.Context, service IAPIDTOService) {
-	apiID, err := getUintFromPath("id", c)
+	apiID, err := http_common.GetUintFromPath("id", c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -74,7 +75,7 @@ func updateAPIHandle(c *gin.Context, service IAPIDTOService) {
 }
 
 func deleteAPIHandle(c *gin.Context, service IAPIDTOService) {
-	apiID, err := getUintFromPath("id", c)
+	apiID, err := http_common.GetUintFromPath("id", c)
 	logrus.Info("Delete", apiID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

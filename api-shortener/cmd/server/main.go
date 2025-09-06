@@ -2,6 +2,8 @@ package main
 
 import (
 	"api-shortener/http"
+	crudapi_v1 "api-shortener/http/crudapi/v1"
+	crudapi_v2 "api-shortener/http/crudapi/v2"
 	shortener "api-shortener/response-shortener"
 	"api-shortener/shortreq"
 	"api-shortener/storage"
@@ -24,21 +26,21 @@ func main() {
 	paramDAO := shortreq.NewOutgoingRequestParamDAO(db, validator)
 	ruleDAO := shortreq.NewShorteningRuleDAO(db, validator)
 
-	apiService := http.NewAPIService(apiDAO)
-	configService := http.NewRequestConfigService(configDAO)
-	headerService := http.NewRequestHeaderService(headerDAO)
-	paramService := http.NewRequestParamService(paramDAO)
-	ruleService := http.NewShorteningRuleService(ruleDAO)
+	apiService := crudapi_v1.NewAPIService(apiDAO)
+	configService := crudapi_v1.NewRequestConfigService(configDAO)
+	headerService := crudapi_v1.NewRequestHeaderService(headerDAO)
+	paramService := crudapi_v1.NewRequestParamService(paramDAO)
+	ruleService := crudapi_v1.NewShorteningRuleService(ruleDAO)
 
 	apiClientSettings := shortener.NewOutgoingRequestClientSettings()
 	apiClient := shortener.NewOutgoingRequestClient(apiClientSettings)
 	responseShortener := shortener.NewResponseShortener(apiClient)
 
-	limiterSettings := http.NewLoopLimiterSettings()
-	limiter := http.NewLoopLimiter(limiterSettings)
-	shorteningService := http.NewResponseShorteningService(configDAO, headerDAO, paramDAO, responseShortener, limiter)
+	limiterSettings := crudapi_v1.NewLoopLimiterSettings()
+	limiter := crudapi_v1.NewLoopLimiter(limiterSettings)
+	shorteningService := crudapi_v1.NewResponseShorteningService(configDAO, headerDAO, paramDAO, responseShortener, limiter)
 
-	apiDTOService := http.NewAPIDTOService(apiDAO, configDAO, ruleDAO, headerDAO, paramDAO)
+	apiDTOService := crudapi_v2.NewAPIDTOService(apiDAO, configDAO, ruleDAO, headerDAO, paramDAO)
 
 	server := http.NewHTTPServer(
 		apiDAO, shorteningService, apiService, configService, headerService, paramService, ruleService, apiDTOService,
