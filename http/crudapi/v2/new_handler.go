@@ -1,8 +1,9 @@
 package http
 
 import (
-	http_common "api-shortener/http/common"
 	"net/http"
+
+	http_common "github.com/HidenYT/api-shortener/http/common"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"

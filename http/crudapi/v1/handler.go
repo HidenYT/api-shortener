@@ -1,11 +1,12 @@
 package http
 
 import (
-	http_common "api-shortener/http/common"
-	shortener "api-shortener/response-shortener"
-	"api-shortener/shortreq"
 	"errors"
 	"net/http"
+
+	http_common "github.com/HidenYT/api-shortener/http/common"
+	shortener "github.com/HidenYT/api-shortener/response-shortener"
+	"github.com/HidenYT/api-shortener/shortreq"
 
 	"github.com/gin-gonic/gin"
 )

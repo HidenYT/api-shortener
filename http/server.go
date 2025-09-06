@@ -1,10 +1,10 @@
 package http
 
 import (
-	http_common "api-shortener/http/common"
-	crudapi_v1 "api-shortener/http/crudapi/v1"
-	crudapi_v2 "api-shortener/http/crudapi/v2"
-	"api-shortener/shortreq"
+	http_common "github.com/HidenYT/api-shortener/http/common"
+	crudapi_v1 "github.com/HidenYT/api-shortener/http/crudapi/v1"
+	crudapi_v2 "github.com/HidenYT/api-shortener/http/crudapi/v2"
+	"github.com/HidenYT/api-shortener/shortreq"
 
 	"github.com/gin-gonic/gin"
 )

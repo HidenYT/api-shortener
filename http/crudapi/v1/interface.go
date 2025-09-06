@@ -1,8 +1,8 @@
 package http
 
 import (
-	shortener "api-shortener/response-shortener"
-	"api-shortener/shortreq"
+	shortener "github.com/HidenYT/api-shortener/response-shortener"
+	"github.com/HidenYT/api-shortener/shortreq"
 )
 
 type IAPIService interface {

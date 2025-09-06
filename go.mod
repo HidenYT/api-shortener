@@ -1,4 +1,4 @@
-module api-shortener
+module github.com/HidenYT/api-shortener
 
 go 1.23.2
 

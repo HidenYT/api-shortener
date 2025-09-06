@@ -1,7 +1,7 @@
 package http
 
 import (
-	"api-shortener/shortreq"
+	"github.com/HidenYT/api-shortener/shortreq"
 )
 
 type IAPIDTOService interface {

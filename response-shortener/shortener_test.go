@@ -1,10 +1,11 @@
 package shortener_test
 
 import (
-	shortener "api-shortener/response-shortener"
 	"net/http"
 	"net/url"
 	"testing"
+
+	shortener "github.com/HidenYT/api-shortener/response-shortener"
 
 	"github.com/stretchr/testify/require"
 )

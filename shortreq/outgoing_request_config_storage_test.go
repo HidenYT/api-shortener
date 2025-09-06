@@ -1,8 +1,9 @@
 package shortreq_test
 
 import (
-	"api-shortener/shortreq"
 	"testing"
+
+	"github.com/HidenYT/api-shortener/shortreq"
 
 	"github.com/stretchr/testify/require"
 )

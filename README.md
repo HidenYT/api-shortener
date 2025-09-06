@@ -27,7 +27,7 @@ Duplicate the .env.example file, rename the copy to `.env` and fill in the value
 
 The following command will automatically migrate your database and start the microservice:
 ```
-go run api-shortener/main
+go run github.com/HidenYT/api-shortener/main
 ```
 
 ## API 

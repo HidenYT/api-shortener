@@ -1,10 +1,11 @@
 package shortreq_test
 
 import (
-	"api-shortener/shortreq"
-	"api-shortener/storage"
 	"os"
 	"testing"
+
+	"github.com/HidenYT/api-shortener/shortreq"
+	"github.com/HidenYT/api-shortener/storage"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"

@@ -1,11 +1,12 @@
 package http
 
 import (
-	shortener "api-shortener/response-shortener"
-	"api-shortener/shortreq"
 	"errors"
 	"net/http"
 	"strings"
+
+	shortener "github.com/HidenYT/api-shortener/response-shortener"
+	"github.com/HidenYT/api-shortener/shortreq"
 
 	"github.com/sirupsen/logrus"
 )

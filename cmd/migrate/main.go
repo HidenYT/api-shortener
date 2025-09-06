@@ -1,7 +1,7 @@
 package main
 
 import (
-	"api-shortener/storage"
+	"github.com/HidenYT/api-shortener/storage"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
