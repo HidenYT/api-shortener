@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/HidenYT/api-shortener/http"
-	crudapi_v1 "github.com/HidenYT/api-shortener/http/crudapi/v1"
-	crudapi_v2 "github.com/HidenYT/api-shortener/http/crudapi/v2"
-	http_shortener "github.com/HidenYT/api-shortener/http/shorten"
-	shortener "github.com/HidenYT/api-shortener/response-shortener"
-	"github.com/HidenYT/api-shortener/shortreq"
-	"github.com/HidenYT/api-shortener/storage"
+	"github.com/HidenYT/api-shortener/internal/http"
+	crudapi_v1 "github.com/HidenYT/api-shortener/internal/http/crudapi/v1"
+	crudapi_v2 "github.com/HidenYT/api-shortener/internal/http/crudapi/v2"
+	http_shortener "github.com/HidenYT/api-shortener/internal/http/shorten"
+	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
+	"github.com/HidenYT/api-shortener/internal/shortreq"
+	"github.com/HidenYT/api-shortener/internal/storage"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"

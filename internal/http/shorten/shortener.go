@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	shortener "github.com/HidenYT/api-shortener/response-shortener"
-	"github.com/HidenYT/api-shortener/shortreq"
+	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
+	"github.com/HidenYT/api-shortener/internal/shortreq"
 
 	"github.com/sirupsen/logrus"
 )

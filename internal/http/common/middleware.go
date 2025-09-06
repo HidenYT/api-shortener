@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/HidenYT/api-shortener/shortreq"
+	"github.com/HidenYT/api-shortener/internal/shortreq"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"

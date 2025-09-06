@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/HidenYT/api-shortener/shortreq"
-	"github.com/HidenYT/api-shortener/storage"
+	"github.com/HidenYT/api-shortener/internal/shortreq"
+	"github.com/HidenYT/api-shortener/internal/storage"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"

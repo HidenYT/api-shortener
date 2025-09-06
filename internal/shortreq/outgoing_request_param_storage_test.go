@@ -4,7 +4,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/HidenYT/api-shortener/shortreq"
+	"github.com/HidenYT/api-shortener/internal/shortreq"
 
 	"github.com/stretchr/testify/require"
 )

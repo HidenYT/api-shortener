@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	http_common "github.com/HidenYT/api-shortener/http/common"
-	shortener "github.com/HidenYT/api-shortener/response-shortener"
-	"github.com/HidenYT/api-shortener/shortreq"
+	http_common "github.com/HidenYT/api-shortener/internal/http/common"
+	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
+	"github.com/HidenYT/api-shortener/internal/shortreq"
 	"github.com/gin-gonic/gin"
 )
 

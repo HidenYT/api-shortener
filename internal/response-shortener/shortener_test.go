@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"testing"
 
-	shortener "github.com/HidenYT/api-shortener/response-shortener"
+	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
 
 	"github.com/stretchr/testify/require"
 )

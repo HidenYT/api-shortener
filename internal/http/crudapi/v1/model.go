@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/HidenYT/api-shortener/shortreq"
+	"github.com/HidenYT/api-shortener/internal/shortreq"
 )
 
 type OutgoingRequestConfigRequest struct {

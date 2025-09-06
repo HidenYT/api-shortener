@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"github.com/HidenYT/api-shortener/shortreq"
+	"github.com/HidenYT/api-shortener/internal/shortreq"
 
 	"gorm.io/gorm"
 )

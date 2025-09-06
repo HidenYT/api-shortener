@@ -1,6 +1,6 @@
 package http_shortener
 
-import shortener "github.com/HidenYT/api-shortener/response-shortener"
+import shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
 
 type ShortenedResponseMeta struct {
 	Err string `json:"error"`

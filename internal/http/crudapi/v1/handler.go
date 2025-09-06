@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 
-	http_common "github.com/HidenYT/api-shortener/http/common"
+	http_common "github.com/HidenYT/api-shortener/internal/http/common"
 
 	"github.com/gin-gonic/gin"
 )
