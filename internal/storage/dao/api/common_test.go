@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao/api"
 	"github.com/HidenYT/api-shortener/internal/storage/migration"
 	"github.com/HidenYT/api-shortener/internal/validation"
 
@@ -34,7 +34,7 @@ func TestMain(m *testing.M) {
 	}
 
 	db := storage.NewDB(&settings)
-	migrator := migration.NewMigrator(db)
+	migrator := migration.NewAPIDBMigrator(db)
 	migrator.Migrate()
 	validator := validation.NewValidate()
 	testShortenedAPIDAO = api_dao.NewShortenedAPIDAO(db, validator)

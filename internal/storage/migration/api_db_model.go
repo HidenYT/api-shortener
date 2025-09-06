@@ -19,6 +19,6 @@ func (m *DBMigrator) Migrate() error {
 	)
 }
 
-func NewMigrator(conn *gorm.DB) IDBMigrator {
+func NewAPIDBMigrator(conn *gorm.DB) IDBMigrator {
 	return &DBMigrator{DB: conn}
 }

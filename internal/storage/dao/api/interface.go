@@ -39,8 +39,3 @@ type IShorteningRuleDAO interface {
 	Update(api *db_model.ShorteningRule) error
 	Delete(id uint) error
 }
-
-type IAPIService interface {
-	CreateAPI() (*db_model.ShortenedAPI, error)
-	DeleteAPI(id uint) error
-}

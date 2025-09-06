@@ -6,7 +6,7 @@ import (
 
 	http_common "github.com/HidenYT/api-shortener/internal/http/common"
 	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
-	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao/api"
 	db_model "github.com/HidenYT/api-shortener/internal/storage/db-model/api"
 	"github.com/gin-gonic/gin"
 )

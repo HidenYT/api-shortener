@@ -12,7 +12,7 @@ func main() {
 	loadEnv()
 	dbSettings := storage.NewDBConnectionSettings()
 	db := storage.NewDB(dbSettings)
-	migrator := migration.NewMigrator(db)
+	migrator := migration.NewAPIDBMigrator(db)
 	migrator.Migrate()
 }
 

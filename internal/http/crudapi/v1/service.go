@@ -1,7 +1,7 @@
 package http
 
 import (
-	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao/api"
 	db_model "github.com/HidenYT/api-shortener/internal/storage/db-model/api"
 )
 

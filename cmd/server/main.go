@@ -7,7 +7,7 @@ import (
 	http_shortener "github.com/HidenYT/api-shortener/internal/http/shorten"
 	shortener "github.com/HidenYT/api-shortener/internal/response-shortener"
 	"github.com/HidenYT/api-shortener/internal/storage"
-	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao/api"
 	"github.com/HidenYT/api-shortener/internal/validation"
 
 	"github.com/joho/godotenv"

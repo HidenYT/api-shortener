@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao/api"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
