@@ -17,8 +17,6 @@ func main() {
 
 	dbSettings := storage.NewDBConnectionSettings()
 	db := storage.NewDB(dbSettings)
-	migrator := storage.NewMigrator(db)
-	migrator.Migrate()
 
 	apiDAO := shortreq.NewShortenedAPIDAO(db, validator)
 	configDAO := shortreq.NewOutgoingRequestConfigDAO(db, validator)
@@ -40,8 +38,10 @@ func main() {
 	limiter := http.NewLoopLimiter(limiterSettings)
 	shorteningService := http.NewResponseShorteningService(configDAO, headerDAO, paramDAO, responseShortener, limiter)
 
+	apiDTOService := http.NewAPIDTOService(apiDAO, configDAO, ruleDAO, headerDAO, paramDAO)
+
 	server := http.NewHTTPServer(
-		apiDAO, shorteningService, apiService, configService, headerService, paramService, ruleService,
+		apiDAO, shorteningService, apiService, configService, headerService, paramService, ruleService, apiDTOService,
 	)
 
 	server.Run()

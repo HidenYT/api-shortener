@@ -1,72 +1,88 @@
 package shortreq
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
 type ShortenedAPI struct {
-	ID        uint           `json:"id" gorm:"primarykey"`
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	gorm.Model
 
-	ShorteningRules []ShorteningRule `json:"-" gorm:"constraint:OnDelete:CASCADE;"`
+	ShorteningRules []ShorteningRule `gorm:"constraint:OnDelete:CASCADE;"`
 }
 
 type OutgoingRequestConfig struct {
-	ID        uint           `json:"id" gorm:"primarykey"`
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	gorm.Model
 
 	Url    string `json:"url" validate:"required,http_url"`
 	Method string `json:"method" validate:"required"`
 
-	Headers []*OutgoingRequestHeader `json:"-"`
-	Params  []*OutgoingRequestParam  `json:"-"`
-	Body    string                   `json:"body"`
+	Headers []OutgoingRequestHeader `gorm:"constraint:OnDelete:CASCADE;"`
+	Params  []OutgoingRequestParam  `gorm:"constraint:OnDelete:CASCADE;"`
+	Body    string
 
-	ShortenedAPIID uint          `json:"shortened_api_id" validate:"required"`
-	ShortenedAPI   *ShortenedAPI `json:"-" gorm:"constraint:OnDelete:CASCADE;"`
+	ShortenedAPIID uint          `validate:"required"`
+	ShortenedAPI   *ShortenedAPI `gorm:"constraint:OnDelete:CASCADE;"`
 }
 
 type OutgoingRequestHeader struct {
-	ID        uint           `json:"id" gorm:"primarykey"`
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	gorm.Model
 
-	Name  string `json:"name" validate:"required"`
-	Value string `json:"value" validate:"required"`
+	Name  string `validate:"required"`
+	Value string `validate:"required"`
 
-	OutgoingRequestConfigID uint                   `json:"outgoing_request_config_id" validate:"required"`
-	OutgoingRequestConfig   *OutgoingRequestConfig `json:"-" gorm:"constraint:OnDelete:CASCADE;"`
+	OutgoingRequestConfigID uint `validate:"required"`
+}
+
+func (o *OutgoingRequestHeader) GetName() string {
+	return o.Name
+}
+
+func (o *OutgoingRequestHeader) GetID() uint {
+	return o.ID
+}
+
+func (o *OutgoingRequestHeader) SetID(id uint) {
+	o.ID = id
 }
 
 type OutgoingRequestParam struct {
-	ID        uint           `json:"id" gorm:"primarykey"`
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	gorm.Model
 
-	Name  string `json:"name" validate:"required"`
-	Value string `json:"value" validate:"required"`
+	Name  string `validate:"required"`
+	Value string `validate:"required"`
 
-	OutgoingRequestConfigID uint                   `json:"outgoing_request_config_id" validate:"required"`
-	OutgoingRequestConfig   *OutgoingRequestConfig `json:"-" gorm:"constraint:OnDelete:CASCADE;"`
+	OutgoingRequestConfigID uint `validate:"required"`
+}
+
+func (o *OutgoingRequestParam) GetName() string {
+	return o.Name
+}
+
+func (o *OutgoingRequestParam) GetID() uint {
+	return o.ID
+}
+
+func (o *OutgoingRequestParam) SetID(id uint) {
+	o.ID = id
 }
 
 type ShorteningRule struct {
-	ID        uint           `json:"id" gorm:"primarykey"`
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	gorm.Model
 
-	FieldName       string `json:"field_name" validate:"required"`
-	FieldValueQuery string `json:"field_value_query" validate:"required,jsonpath-query"`
+	FieldName       string `validate:"required"`
+	FieldValueQuery string `validate:"required,jsonpath-query"`
 
-	ShortenedAPIID uint          `json:"shortened_api_id" validate:"required"`
-	ShortenedAPI   *ShortenedAPI `json:"-" gorm:"constraint:OnDelete:CASCADE;"`
+	ShortenedAPIID uint `validate:"required"`
+}
+
+func (o *ShorteningRule) GetName() string {
+	return o.FieldName
+}
+
+func (o *ShorteningRule) GetID() uint {
+	return o.ID
+}
+
+func (o *ShorteningRule) SetID(id uint) {
+	o.ID = id
 }

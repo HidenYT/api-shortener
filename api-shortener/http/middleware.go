@@ -20,7 +20,7 @@ const (
 var (
 	errUnathorized                = errors.New("Unauthorized")
 	errAPIIDNotFoundInRequestPath = errors.New("API ID not found in request path")
-	errInvalidAPIID               = errors.New("API ID is invalid")
+	errAPIIDNotFound              = errors.New("API ID not found")
 )
 
 func apiTokenChecker() gin.HandlerFunc {
@@ -48,7 +48,7 @@ func apiIDChecker(apiDAO shortreq.IShortenedAPIDAO) gin.HandlerFunc {
 
 		api, err := apiDAO.Get(uint(apiID))
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": errInvalidAPIID.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": errAPIIDNotFound.Error()})
 			return
 		}
 		c.Set(CTX_API_KEY, api)
