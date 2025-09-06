@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/HidenYT/api-shortener/internal/storage"
+	api_dao "github.com/HidenYT/api-shortener/internal/storage/dao"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -11,7 +12,7 @@ func main() {
 	loadEnv()
 	dbSettings := storage.NewDBConnectionSettings()
 	db := storage.NewDB(dbSettings)
-	migrator := storage.NewMigrator(db)
+	migrator := api_dao.NewMigrator(db)
 	migrator.Migrate()
 }
 

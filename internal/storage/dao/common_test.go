@@ -33,7 +33,7 @@ func TestMain(m *testing.M) {
 	}
 
 	db := storage.NewDB(&settings)
-	migrator := storage.NewMigrator(db)
+	migrator := api_dao.NewMigrator(db)
 	migrator.Migrate()
 	validator := validation.NewValidate()
 	testShortenedAPIDAO = api_dao.NewShortenedAPIDAO(db, validator)
