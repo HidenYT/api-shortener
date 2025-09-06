@@ -37,13 +37,74 @@ parameter `token` with the token from `API_KEY` in the `.env` file:
 ```
 curl http://localhost:8080/api/63?token=MY_TOKEN_FROM_API_KEY
 ```
-### Description
+### Description (Shortening API)
+|Path|Method|Description|
+|----|------|-----------|
+|`/api/:id`|any|Send request to the ShortenedAPI with the ID|
+
+
+### Description (CRUD API v2)
+|Path|Method|Description|
+|----|------|-----------|
+|`/rest/api/v2`|POST|Create ShortenedAPI and all its dependencies from JSON|
+|`/rest/api/v2/:id`|GET|Get ShortenedAPI and all its dependencies by ID|
+|`/rest/api/v2/:id`|PUT|Update ShortenedAPI and all its dependencies by ID from JSON|
+|`/rest/api/v2/:id`|DELETE|Delete ShortenedAPI and all its dependencies by ID|
+
+<details>
+<summary>Example</summary>
+
+```shell
+curl --location --request POST 'http://localhost:8080/rest/api/v2/3?token=API_TOKEN' \
+--header 'Content-Type: application/json' \
+--data '{
+  "outgoingRequestConfig": {
+    "url": "https://api.example.com/users",
+    "method": "POST",
+    "headers": [
+      {
+        "name": "Content-Type",
+        "value": "application/json"
+      },
+      {
+        "name": "Authorization",
+        "value": "Bearer token123"
+      }
+    ],
+    "params": [
+      {
+        "name": "page",
+        "value": "1"
+      },
+      {
+        "name": "limit",
+        "value": "10"
+      }
+    ],
+    "body": "{\"query\":\"getUsers\"}"
+  },
+  "shorteningRules": [
+    {
+      "fieldName": "data.users",
+      "fieldValueQuery": "$.data.users[*].id"
+    },
+    {
+      "fieldName": "metadata",
+      "fieldValueQuery": "$.metadata"
+    }
+  ]
+}'
+```
+</details>
+
+<details>
+<summary>Description (CRUD API v1) (deprecated)</summary>
+
 #### ShortenedAPI
 |Path|Method|Description|
 |----|------|-----------|
 |`/rest/api`|POST|Create ShortenedAPI from JSON|
 |`/rest/api/:id`|DELETE|Delete ShortenedAPI by ID|
-|`/api/:id`|any|Send request to the ShortenedAPI with the ID|
 
 #### OutgoingRequestConfig
 |Path|Method|Description|
@@ -80,3 +141,4 @@ curl http://localhost:8080/api/63?token=MY_TOKEN_FROM_API_KEY
 |`/rest/params/?configID=CONFIG_ID`|GET|Get all OutgoingRequestParams by OutgoingRequestConfig ID|
 |`/rest/params`|PUT|Update OutgoingRequestParam from JSON|
 |`/rest/params/:id`|DELETE|Delete OutgoingRequestParam by ID|
+</details>
