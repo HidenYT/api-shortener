@@ -1,7 +1,6 @@
 package http
 
 import (
-	shortener "github.com/HidenYT/api-shortener/response-shortener"
 	"github.com/HidenYT/api-shortener/shortreq"
 )
 
@@ -41,8 +40,4 @@ type IRequestParamService interface {
 	GetAllByConfigID(apiID uint) ([]*shortreq.OutgoingRequestParam, error)
 	Update(id uint, api *OutgoingRequestParamRequest) (*shortreq.OutgoingRequestParam, error)
 	Delete(id uint) error
-}
-
-type IResponseShorteningService interface {
-	ProcessRequest(api *shortreq.ShortenedAPI) (*shortener.ShortenedResponse, error)
 }

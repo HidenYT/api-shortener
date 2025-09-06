@@ -4,6 +4,7 @@ import (
 	"github.com/HidenYT/api-shortener/http"
 	crudapi_v1 "github.com/HidenYT/api-shortener/http/crudapi/v1"
 	crudapi_v2 "github.com/HidenYT/api-shortener/http/crudapi/v2"
+	http_shortener "github.com/HidenYT/api-shortener/http/shorten"
 	shortener "github.com/HidenYT/api-shortener/response-shortener"
 	"github.com/HidenYT/api-shortener/shortreq"
 	"github.com/HidenYT/api-shortener/storage"
@@ -36,9 +37,9 @@ func main() {
 	apiClient := shortener.NewOutgoingRequestClient(apiClientSettings)
 	responseShortener := shortener.NewResponseShortener(apiClient)
 
-	limiterSettings := crudapi_v1.NewLoopLimiterSettings()
-	limiter := crudapi_v1.NewLoopLimiter(limiterSettings)
-	shorteningService := crudapi_v1.NewResponseShorteningService(configDAO, headerDAO, paramDAO, responseShortener, limiter)
+	limiterSettings := http_shortener.NewLoopLimiterSettings()
+	limiter := http_shortener.NewLoopLimiter(limiterSettings)
+	shorteningService := http_shortener.NewResponseShorteningService(configDAO, headerDAO, paramDAO, responseShortener, limiter)
 
 	apiDTOService := crudapi_v2.NewAPIDTOService(apiDAO, configDAO, ruleDAO, headerDAO, paramDAO)
 

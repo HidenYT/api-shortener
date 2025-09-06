@@ -1,7 +1,6 @@
 package http
 
 import (
-	shortener "github.com/HidenYT/api-shortener/response-shortener"
 	"github.com/HidenYT/api-shortener/shortreq"
 )
 
@@ -60,28 +59,5 @@ func shorteningRuleRequestToDBModel(request *ShorteningRuleRequest) *shortreq.Sh
 		FieldName:       request.FieldName,
 		FieldValueQuery: request.FieldValueQuery,
 		ShortenedAPIID:  request.ShortenedAPIID,
-	}
-}
-
-type ShortenedResponseMeta struct {
-	Err string `json:"error"`
-}
-
-type ShortenedAPIResponse struct {
-	Meta *ShortenedResponseMeta `json:"meta,omitempty"`
-	Data *map[string]any        `json:"data,omitempty"`
-}
-
-func shortenedAPIResponseFromError(err error) ShortenedAPIResponse {
-	return ShortenedAPIResponse{
-		Meta: &ShortenedResponseMeta{
-			Err: err.Error(),
-		},
-	}
-}
-
-func shortenedAPIResponseFromResponse(response *shortener.ShortenedResponse) ShortenedAPIResponse {
-	return ShortenedAPIResponse{
-		Data: response.JSON,
 	}
 }
