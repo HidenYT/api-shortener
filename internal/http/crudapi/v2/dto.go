@@ -12,9 +12,9 @@ type OutgoingRequestConfigDTO struct {
 	Url    string `json:"url" validate:"required,http_url"`
 	Method string `json:"method" validate:"required"`
 
-	Headers []*OutgoingRequestHeaderDTO `json:"headers"`
-	Params  []*OutgoingRequestParamDTO  `json:"params"`
-	Body    string                      `json:"body"`
+	Headers []*OutgoingRequestHeaderDTO `json:"headers" validate:"required"`
+	Params  []*OutgoingRequestParamDTO  `json:"params" validate:"required"`
+	Body    string                      `json:"body" validate:"required"`
 }
 
 type OutgoingRequestHeaderDTO struct {
